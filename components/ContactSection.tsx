@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle } from 'lucide-react'
 import { useState } from 'react'
+import { useCreateContact } from '@/hooks/useApi'
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,10 @@ const ContactSection = () => {
     message: ''
   })
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+
+  const { createContact, loading } = useCreateContact()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
@@ -22,12 +27,23 @@ const ContactSection = () => {
     })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Simulate form submission
-    setIsSubmitted(true)
-    setTimeout(() => {
-      setIsSubmitted(false)
+    setIsSubmitting(true)
+    setSubmitError('')
+
+    try {
+      await createContact({
+        name: formData.name,
+        email: formData.email,
+        company: formData.company,
+        project: formData.project,
+        budget: formData.budget,
+        message: formData.message,
+        status: 'new'
+      })
+
+      setIsSubmitted(true)
       setFormData({
         name: '',
         email: '',
@@ -36,7 +52,16 @@ const ContactSection = () => {
         budget: '',
         message: ''
       })
-    }, 3000)
+
+      setTimeout(() => {
+        setIsSubmitted(false)
+      }, 3000)
+    } catch (error) {
+      setSubmitError('Failed to submit contact form. Please try again.')
+      console.error('Contact form submission error:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const contactInfo = [
@@ -311,12 +336,28 @@ const ContactSection = () => {
                   />
                 </div>
 
+                {submitError && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                    <p className="text-red-800 text-sm">{submitError}</p>
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full btn-primary flex items-center justify-center group"
+                  disabled={isSubmitting || loading}
+                  className="w-full btn-primary flex items-center justify-center group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Send Message
-                  <Send className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  {isSubmitting || loading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      Send Message
+                      <Send className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
                 </button>
               </form>
             )}

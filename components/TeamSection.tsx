@@ -2,9 +2,54 @@
 
 import { motion } from 'framer-motion'
 import { Github, Linkedin, Twitter, Mail, Code, Smartphone, Cloud, Database, Shield, Zap } from 'lucide-react'
+import { useTeamMembers } from '@/hooks/useApi'
 
 const TeamSection = () => {
-  const teamMembers = [
+  const { data: teamMembers = [], loading, error } = useTeamMembers({ status: 'active' })
+
+  // Map icon string to component
+  const getIconComponent = (iconName: string) => {
+    switch (iconName) {
+      case 'Code': return Code
+      case 'Smartphone': return Smartphone
+      case 'Cloud': return Cloud
+      case 'Database': return Database
+      case 'Shield': return Shield
+      case 'Zap': return Zap
+      default: return Code
+    }
+  }
+
+  // Show loading state
+  if (loading) {
+    return (
+      <section id="team" className="py-20 bg-gray-50">
+        <div className="container-max section-padding">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading team members...</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <section id="team" className="py-20 bg-gray-50">
+        <div className="container-max section-padding">
+          <div className="text-center">
+            <p className="text-red-600 mb-4">Failed to load team members</p>
+            <p className="text-gray-600">Please try again later</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  // Fallback team members if API returns empty
+  const fallbackTeamMembers = [
     {
       name: 'Sarah Chen',
       role: 'Lead Full-Stack Developer',
@@ -164,23 +209,25 @@ const TeamSection = () => {
           viewport={{ once: true }}
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {teamMembers.map((member, index) => (
-            <motion.div
-              key={index}
-              variants={itemVariants}
-              className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group"
-            >
-              {/* Member Image */}
-              <div className="relative mb-6">
-                <img
-                  src={member.image}
-                  alt={member.name}
-                  className="w-24 h-24 rounded-full mx-auto object-cover border-4 border-white shadow-lg"
-                />
-                <div className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-gradient-to-r ${member.color} flex items-center justify-center shadow-lg`}>
-                  <member.icon className="h-4 w-4 text-white" />
+          {(teamMembers.length > 0 ? teamMembers : fallbackTeamMembers).map((member, index) => {
+            const IconComponent = getIconComponent(member.icon)
+            return (
+              <motion.div
+                key={member.id || index}
+                variants={itemVariants}
+                className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group"
+              >
+                {/* Member Image */}
+                <div className="relative mb-6">
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-24 h-24 rounded-full mx-auto object-cover border-4 border-white shadow-lg"
+                  />
+                  <div className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-gradient-to-r ${member.color} flex items-center justify-center shadow-lg`}>
+                    <IconComponent className="h-4 w-4 text-white" />
+                  </div>
                 </div>
-              </div>
 
               {/* Member Info */}
               <div className="text-center mb-4">
@@ -211,33 +258,48 @@ const TeamSection = () => {
 
               {/* Social Links */}
               <div className="flex justify-center space-x-3">
-                <a
-                  href={member.social.github}
-                  className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200 group-hover:scale-110"
-                >
-                  <Github className="h-4 w-4 text-gray-600" />
-                </a>
-                <a
-                  href={member.social.linkedin}
-                  className="p-2 bg-gray-100 hover:bg-blue-100 rounded-full transition-colors duration-200 group-hover:scale-110"
-                >
-                  <Linkedin className="h-4 w-4 text-gray-600 hover:text-blue-600" />
-                </a>
-                <a
-                  href={member.social.twitter}
-                  className="p-2 bg-gray-100 hover:bg-blue-100 rounded-full transition-colors duration-200 group-hover:scale-110"
-                >
-                  <Twitter className="h-4 w-4 text-gray-600 hover:text-blue-600" />
-                </a>
-                <a
-                  href={`mailto:${member.name.toLowerCase().replace(' ', '.')}@techflow.com`}
-                  className="p-2 bg-gray-100 hover:bg-primary-100 rounded-full transition-colors duration-200 group-hover:scale-110"
-                >
-                  <Mail className="h-4 w-4 text-gray-600 hover:text-primary-600" />
-                </a>
+                {member.social.github && (
+                  <a
+                    href={member.social.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200 group-hover:scale-110"
+                  >
+                    <Github className="h-4 w-4 text-gray-600" />
+                  </a>
+                )}
+                {member.social.linkedin && (
+                  <a
+                    href={member.social.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 bg-gray-100 hover:bg-blue-100 rounded-full transition-colors duration-200 group-hover:scale-110"
+                  >
+                    <Linkedin className="h-4 w-4 text-gray-600 hover:text-blue-600" />
+                  </a>
+                )}
+                {member.social.twitter && (
+                  <a
+                    href={member.social.twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 bg-gray-100 hover:bg-blue-100 rounded-full transition-colors duration-200 group-hover:scale-110"
+                  >
+                    <Twitter className="h-4 w-4 text-gray-600 hover:text-blue-600" />
+                  </a>
+                )}
+                {member.social.email && (
+                  <a
+                    href={`mailto:${member.social.email}`}
+                    className="p-2 bg-gray-100 hover:bg-primary-100 rounded-full transition-colors duration-200 group-hover:scale-110"
+                  >
+                    <Mail className="h-4 w-4 text-gray-600 hover:text-primary-600" />
+                  </a>
+                )}
               </div>
             </motion.div>
-          ))}
+            )
+          })}
         </motion.div>
 
         {/* Team Culture */}

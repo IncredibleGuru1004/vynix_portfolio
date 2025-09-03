@@ -15,9 +15,60 @@ import {
   Monitor,
   Server
 } from 'lucide-react'
+import { useServices } from '@/hooks/useApi'
 
 const ServicesSection = () => {
-  const services = [
+  const { data: services = [], loading, error } = useServices({ isActive: true })
+
+  // Map icon string to component
+  const getIconComponent = (iconName: string) => {
+    switch (iconName) {
+      case 'Code': return Code
+      case 'Smartphone': return Smartphone
+      case 'Cloud': return Cloud
+      case 'Database': return Database
+      case 'Globe': return Globe
+      case 'Shield': return Shield
+      case 'Zap': return Zap
+      case 'Users': return Users
+      case 'Cpu': return Cpu
+      case 'GitBranch': return GitBranch
+      case 'Monitor': return Monitor
+      case 'Server': return Server
+      default: return Code
+    }
+  }
+
+  // Show loading state
+  if (loading) {
+    return (
+      <section id="services" className="py-20 bg-gray-50">
+        <div className="container-max section-padding">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading services...</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <section id="services" className="py-20 bg-gray-50">
+        <div className="container-max section-padding">
+          <div className="text-center">
+            <p className="text-red-600 mb-4">Failed to load services</p>
+            <p className="text-gray-600">Please try again later</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  // Fallback services if API returns empty
+  const fallbackServices = [
     {
       icon: Code,
       title: 'Frontend Development',
@@ -123,39 +174,42 @@ const ServicesSection = () => {
           viewport={{ once: true }}
           className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
         >
-          {services.map((service, index) => (
-            <motion.div
-              key={index}
-              variants={itemVariants}
-              className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group"
-            >
-              <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${service.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                <service.icon className="h-6 w-6 text-white" />
-              </div>
-              
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                {service.title}
-              </h3>
-              
-              <p className="text-gray-600 mb-4 text-sm leading-relaxed">
-                {service.description}
-              </p>
-              
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium text-gray-700">Technologies:</h4>
-                <div className="flex flex-wrap gap-1">
-                  {service.technologies.map((tech, techIndex) => (
-                    <span
-                      key={techIndex}
-                      className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md hover:bg-primary-100 hover:text-primary-600 transition-colors duration-200"
-                    >
-                      {tech}
-                    </span>
-                  ))}
+          {(services.length > 0 ? services : fallbackServices).map((service, index) => {
+            const IconComponent = getIconComponent(service.icon)
+            return (
+              <motion.div
+                key={service.id || index}
+                variants={itemVariants}
+                className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group"
+              >
+                <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${service.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                  <IconComponent className="h-6 w-6 text-white" />
                 </div>
-              </div>
-            </motion.div>
-          ))}
+                
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                  {service.title}
+                </h3>
+                
+                <p className="text-gray-600 mb-4 text-sm leading-relaxed">
+                  {service.description}
+                </p>
+                
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium text-gray-700">Technologies:</h4>
+                  <div className="flex flex-wrap gap-1">
+                    {service.technologies.map((tech, techIndex) => (
+                      <span
+                        key={techIndex}
+                        className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md hover:bg-primary-100 hover:text-primary-600 transition-colors duration-200"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )
+          })}
         </motion.div>
 
         {/* Tech Stack Overview */}

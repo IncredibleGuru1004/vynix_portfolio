@@ -13,90 +13,37 @@ import {
   Search,
   CheckCircle,
   Clock,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from 'lucide-react'
 import PageHeader from './PageHeader'
-
-interface ContactSubmission {
-  id: number
-  name: string
-  email: string
-  company: string
-  project: string
-  budget: string
-  message: string
-  status: 'new' | 'read' | 'replied' | 'archived'
-  submittedAt: string
-  repliedAt?: string
-}
+import { 
+  useContacts, 
+  useUpdateContact, 
+  useDeleteContact 
+} from '@/hooks/useApi'
+import { ContactSubmission, ContactFilters } from '@/lib/types'
 
 const ContactManagement = () => {
-  const [contacts, setContacts] = useState<ContactSubmission[]>([
-    {
-      id: 1,
-      name: 'John Doe',
-      email: 'john@example.com',
-      company: 'Tech Corp',
-      project: 'Web Application',
-      budget: '$50,000 - $100,000',
-      message: 'We are looking for a comprehensive web application for our business. The project involves user management, payment processing, and analytics dashboard.',
-      status: 'new',
-      submittedAt: '2024-01-20T10:30:00Z'
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      email: 'jane@startup.com',
-      company: 'StartupXYZ',
-      project: 'Mobile App',
-      budget: '$25,000 - $50,000',
-      message: 'Need a mobile app for our startup. Looking for both iOS and Android versions with backend integration.',
-      status: 'read',
-      submittedAt: '2024-01-19T14:15:00Z'
-    },
-    {
-      id: 3,
-      name: 'Mike Johnson',
-      email: 'mike@enterprise.com',
-      company: 'Enterprise Inc',
-      project: 'Cloud Migration',
-      budget: '$100,000 - $250,000',
-      message: 'We need to migrate our existing infrastructure to the cloud. Looking for a comprehensive solution with minimal downtime.',
-      status: 'replied',
-      submittedAt: '2024-01-18T09:45:00Z',
-      repliedAt: '2024-01-19T11:20:00Z'
-    },
-    {
-      id: 4,
-      name: 'Sarah Wilson',
-      email: 'sarah@agency.com',
-      company: 'Creative Agency',
-      project: 'E-commerce Platform',
-      budget: '$50,000 - $100,000',
-      message: 'Looking to build an e-commerce platform for our clients. Need custom features and integrations.',
-      status: 'new',
-      submittedAt: '2024-01-20T16:20:00Z'
-    }
-  ])
-
   const [selectedContact, setSelectedContact] = useState<ContactSubmission | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState('all')
   const [filterProject, setFilterProject] = useState('all')
 
+  // API filters
+  const filters: ContactFilters = {
+    search: searchTerm || undefined,
+    status: filterStatus !== 'all' ? filterStatus as any : undefined,
+    project: filterProject !== 'all' ? filterProject : undefined
+  }
+
+  // API hooks
+  const { data: contacts = [], loading, error, refetch } = useContacts(filters)
+  const { updateContact, loading: updateLoading } = useUpdateContact()
+  const { deleteContact, loading: deleteLoading } = useDeleteContact()
+
   const projects = ['All', 'Web Application', 'Mobile App', 'E-commerce Platform', 'Cloud Migration', 'API Development', 'Database Design', 'DevOps Setup', 'Security Audit', 'Other']
   const statuses = ['All', 'New', 'Read', 'Replied', 'Archived']
-
-  const filteredContacts = contacts.filter(contact => {
-    const matchesSearch = contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         contact.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         contact.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         contact.message.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = filterStatus === 'all' || contact.status === filterStatus.toLowerCase()
-    const matchesProject = filterProject === 'all' || contact.project === filterProject
-    
-    return matchesSearch && matchesStatus && matchesProject
-  })
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -128,21 +75,29 @@ const ContactManagement = () => {
     }
   }
 
-  const handleStatusChange = (id: number, newStatus: string) => {
-    setContacts(contacts.map(contact => 
-      contact.id === id ? { 
-        ...contact, 
+  const handleStatusChange = async (id: number, newStatus: string) => {
+    try {
+      await updateContact({ 
+        id, 
         status: newStatus as any,
-        repliedAt: newStatus === 'replied' ? new Date().toISOString() : contact.repliedAt
-      } : contact
-    ))
+        repliedAt: newStatus === 'replied' ? new Date().toISOString() : undefined
+      })
+      refetch() // Refresh the data
+    } catch (error) {
+      console.error('Failed to update contact status:', error)
+    }
   }
 
-  const handleDeleteContact = (id: number) => {
+  const handleDeleteContact = async (id: number) => {
     if (confirm('Are you sure you want to delete this contact submission?')) {
-      setContacts(contacts.filter(contact => contact.id !== id))
-      if (selectedContact?.id === id) {
-        setSelectedContact(null)
+      try {
+        await deleteContact(id)
+        if (selectedContact?.id === id) {
+          setSelectedContact(null)
+        }
+        refetch() // Refresh the data
+      } catch (error) {
+        console.error('Failed to delete contact:', error)
       }
     }
   }
@@ -158,10 +113,10 @@ const ContactManagement = () => {
   }
 
   const stats = {
-    total: contacts.length,
-    new: contacts.filter(c => c.status === 'new').length,
-    read: contacts.filter(c => c.status === 'read').length,
-    replied: contacts.filter(c => c.status === 'replied').length
+    total: contacts?.length || 0,
+    new: contacts?.filter(c => c.status === 'new').length || 0,
+    read: contacts?.filter(c => c.status === 'read').length || 0,
+    replied: contacts?.filter(c => c.status === 'replied').length || 0
   }
 
   return (
@@ -260,15 +215,37 @@ const ContactManagement = () => {
               </select>
               <div className="flex items-center text-sm text-gray-600">
                 <Filter className="h-4 w-4 mr-2" />
-                {filteredContacts.length} contacts
+                {contacts?.length || 0} contacts
               </div>
             </div>
           </div>
 
+          {/* Loading State */}
+          {loading && (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
+              <span className="ml-2 text-gray-600">Loading contacts...</span>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <p className="text-red-800">Error loading contacts: {error}</p>
+              <button 
+                onClick={refetch}
+                className="mt-2 text-red-600 hover:text-red-800 underline"
+              >
+                Try again
+              </button>
+            </div>
+          )}
+
           {/* Contact List */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="divide-y divide-gray-200">
-              {filteredContacts.map((contact) => {
+          {!loading && !error && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+              <div className="divide-y divide-gray-200">
+                {contacts?.map((contact) => {
                 const StatusIcon = getStatusIcon(contact.status)
                 return (
                   <div
@@ -343,8 +320,9 @@ const ContactManagement = () => {
                   </div>
                 )
               })}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Contact Details */}

@@ -2,9 +2,53 @@
 
 import { motion } from 'framer-motion'
 import { ExternalLink, Github, Smartphone, Globe, Database, Cloud } from 'lucide-react'
+import { useProjects } from '@/hooks/useApi'
 
 const PortfolioSection = () => {
-  const projects = [
+  const { data: projects = [], loading, error } = useProjects({ status: 'published' })
+
+  // Map category to icon
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'Web Application': return Globe
+      case 'Mobile App': return Smartphone
+      case 'Data Analytics': return Database
+      case 'Cloud Solutions': return Cloud
+      case 'IoT Solutions': return Globe
+      default: return Globe
+    }
+  }
+
+  // Show loading state
+  if (loading) {
+    return (
+      <section id="portfolio" className="py-20 bg-white">
+        <div className="container-max section-padding">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading projects...</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <section id="portfolio" className="py-20 bg-white">
+        <div className="container-max section-padding">
+          <div className="text-center">
+            <p className="text-red-600 mb-4">Failed to load projects</p>
+            <p className="text-gray-600">Please try again later</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  // Fallback projects if API returns empty
+  const fallbackProjects = [
     {
       title: 'E-Commerce Platform',
       description: 'Full-stack e-commerce solution with React frontend, Node.js backend, and MongoDB database. Features include payment integration, inventory management, and admin dashboard.',
@@ -133,37 +177,53 @@ const PortfolioSection = () => {
           viewport={{ once: true }}
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {projects.map((project, index) => (
-            <motion.div
-              key={index}
-              variants={itemVariants}
-              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 group"
-            >
-              {/* Project Image */}
-              <div className="relative overflow-hidden">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="absolute top-4 left-4">
-                  <div className={`flex items-center space-x-2 px-3 py-1 bg-gradient-to-r ${project.color} rounded-full text-white text-sm font-medium`}>
-                    <project.icon className="h-4 w-4" />
-                    <span>{project.category}</span>
+          {(projects.length > 0 ? projects : fallbackProjects).map((project, index) => {
+            const CategoryIcon = getCategoryIcon(project.category)
+            return (
+              <motion.div
+                key={project.id || index}
+                variants={itemVariants}
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 group"
+              >
+                {/* Project Image */}
+                <div className="relative overflow-hidden">
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute top-4 left-4">
+                    <div className="flex items-center space-x-2 px-3 py-1 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full text-white text-sm font-medium">
+                      <CategoryIcon className="h-4 w-4" />
+                      <span>{project.category}</span>
+                    </div>
+                  </div>
+                  <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="flex space-x-2">
+                      {project.liveUrl && (
+                        <a 
+                          href={project.liveUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
+                        >
+                          <ExternalLink className="h-4 w-4 text-white" />
+                        </a>
+                      )}
+                      {project.githubUrl && (
+                        <a 
+                          href={project.githubUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
+                        >
+                          <Github className="h-4 w-4 text-white" />
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="flex space-x-2">
-                    <button className="p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors">
-                      <ExternalLink className="h-4 w-4 text-white" />
-                    </button>
-                    <button className="p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors">
-                      <Github className="h-4 w-4 text-white" />
-                    </button>
-                  </div>
-                </div>
-              </div>
 
               {/* Project Content */}
               <div className="p-6">
@@ -187,7 +247,8 @@ const PortfolioSection = () => {
                 </div>
               </div>
             </motion.div>
-          ))}
+            )
+          })}
         </motion.div>
 
         {/* Call to Action */}

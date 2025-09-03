@@ -2,8 +2,11 @@
 
 import { motion } from 'framer-motion'
 import { ArrowRight, Code, Smartphone, Cloud, Database, Zap, Shield, Users } from 'lucide-react'
+import { useActiveHeroContent } from '@/hooks/useApi'
 
 const HeroSection = () => {
+  const { data: heroContent, loading, error } = useActiveHeroContent()
+
   const techIcons = [
     { icon: Code, label: 'Web Development' },
     { icon: Smartphone, label: 'Mobile Apps' },
@@ -18,8 +21,44 @@ const HeroSection = () => {
     { number: '24/7', label: 'Support' },
   ]
 
+  // Show loading state
+  if (loading) {
+    return (
+      <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary-50 via-white to-secondary-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </section>
+    )
+  }
+
+  // Show error state
+  if (error || !heroContent) {
+    return (
+      <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary-50 via-white to-secondary-50">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Failed to load hero content</p>
+          <p className="text-gray-600">Please try again later</p>
+        </div>
+      </section>
+    )
+  }
+
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary-50 via-white to-secondary-50">
+    <section 
+      id="home" 
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary-50 via-white to-secondary-50"
+      style={{
+        backgroundImage: heroContent.backgroundImage ? `url(${heroContent.backgroundImage})` : undefined,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      {/* Background Overlay */}
+      <div className="absolute inset-0 bg-white/80"></div>
+      
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -42,8 +81,8 @@ const HeroSection = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6"
             >
-              Building the Future of
-              <span className="gradient-text block">Digital Solutions</span>
+              {heroContent.title}
+              <span className="gradient-text block">{heroContent.subtitle}</span>
             </motion.h1>
 
             <motion.p
@@ -52,8 +91,7 @@ const HeroSection = () => {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="text-xl text-gray-600 mb-8 max-w-2xl"
             >
-              We're a premier IT development agency specializing in cutting-edge web applications, 
-              mobile solutions, cloud infrastructure, and digital transformation services.
+              {heroContent.description}
             </motion.p>
 
             <motion.div
@@ -62,13 +100,13 @@ const HeroSection = () => {
               transition={{ duration: 0.8, delay: 0.6 }}
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
-              <button className="btn-primary flex items-center justify-center group">
-                Start Your Project
+              <a href={heroContent.primaryButton.link} className="btn-primary flex items-center justify-center group">
+                {heroContent.primaryButton.text}
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-              <button className="btn-secondary">
-                View Our Work
-              </button>
+              </a>
+              <a href={heroContent.secondaryButton.link} className="btn-secondary">
+                {heroContent.secondaryButton.text}
+              </a>
             </motion.div>
 
             {/* Stats */}
