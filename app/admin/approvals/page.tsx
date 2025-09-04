@@ -1,5 +1,5 @@
 import PendingApprovals from '@/components/admin/PendingApprovals'
-import AdminAuthGuard from '@/components/admin/AdminAuthGuard'
+import AdminOnlyGuard from '@/components/admin/AdminOnlyGuard'
 
 export const metadata = {
   title: 'Pending Approvals - Admin Panel',
@@ -8,8 +8,8 @@ export const metadata = {
 
 export default function ApprovalsPage() {
   return (
-    <AdminAuthGuard>
+    <AdminOnlyGuard>
       <PendingApprovals />
-    </AdminAuthGuard>
+    </AdminOnlyGuard>
   )
 }

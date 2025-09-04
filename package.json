@@ -7,12 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "setup-admin": "node scripts/setup-firebase-admin.mjs"
+    "setup-admin": "node scripts/setup-firebase-admin.mjs",
+    "test-auth-fix": "node scripts/test-auth-fix.mjs"
   },
   "dependencies": {
     "clsx": "^2.0.0",
     "dotenv": "^17.2.2",
     "firebase": "^12.2.1",
+    "firebase-admin": "^13.5.0",
     "framer-motion": "^10.16.16",
     "lucide-react": "^0.294.0",
     "next": "14.0.4",

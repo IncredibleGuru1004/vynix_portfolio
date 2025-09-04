@@ -16,7 +16,8 @@ import {
   ChevronRight,
   X,
   UserCheck,
-  Clock
+  Clock,
+  Shield
 } from 'lucide-react'
 
 interface AdminSidebarProps {
@@ -38,13 +39,21 @@ const AdminSidebar = ({ isOpen, onClose, onMenuToggle }: AdminSidebarProps) => {
       href: '/admin',
       exact: true
     },
-    // Only show approvals to admin users
-    ...(isAdmin() ? [{
-      id: 'approvals',
-      label: 'Team Approvals',
-      icon: UserCheck,
-      href: '/admin/approvals'
-    }] : []),
+    // Only show admin-only features to admin users
+    ...(isAdmin() ? [
+      {
+        id: 'approvals',
+        label: 'Team Approvals',
+        icon: UserCheck,
+        href: '/admin/approvals'
+      },
+      {
+        id: 'admin-management',
+        label: 'Admin Management',
+        icon: Shield,
+        href: '/admin/admin-management'
+      }
+    ] : []),
     {
       id: 'content',
       label: 'Content Management',

@@ -140,3 +140,6 @@ export const isAdmin = (user: AdminUser | null): boolean => {
 export const isApprovedTeamMember = (user: AdminUser | null): boolean => {
   return user?.isApproved === true
 }
+
+// Note: createTeamMemberAccount function moved to API endpoint to prevent auth context issues
+// The function is now available at /api/admin/create-team-member

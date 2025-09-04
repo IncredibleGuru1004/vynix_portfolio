@@ -66,23 +66,25 @@ const TeamRegistration = () => {
     setError('')
 
     try {
-      // Simulate API call to submit registration
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      // Store registration data (in real app, this would go to your backend)
-      const registrations = JSON.parse(localStorage.getItem('pendingRegistrations') || '[]')
-      const newRegistration = {
-        ...formData,
-        id: Date.now().toString(),
-        submittedAt: new Date().toISOString(),
-        status: 'pending'
+      // Submit to Firebase API
+      const response = await fetch('/api/team-registrations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const result = await response.json()
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to submit application')
       }
-      registrations.push(newRegistration)
-      localStorage.setItem('pendingRegistrations', JSON.stringify(registrations))
       
       setIsSubmitted(true)
     } catch (err) {
-      setError('Failed to submit application. Please try again.')
+      console.error('Registration error:', err)
+      setError(err instanceof Error ? err.message : 'Failed to submit application. Please try again.')
     } finally {
       setIsSubmitting(false)
     }

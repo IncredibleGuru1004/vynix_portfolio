@@ -75,6 +75,64 @@ export interface TeamMember extends BaseEntity {
 
 export type TeamStatus = 'active' | 'inactive'
 
+// Team Registration types
+export interface TeamRegistration {
+  id: string // Firebase uses string IDs
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string
+  location?: string
+  position: string
+  experience: string
+  skills: string
+  github?: string
+  linkedin?: string
+  portfolio?: string
+  coverLetter: string
+  availability: 'full-time' | 'part-time' | 'contract' | 'freelance'
+  status: 'pending' | 'approved' | 'rejected'
+  submittedAt: string
+  reviewedAt?: string
+  reviewedBy?: string
+  notes?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateTeamRegistrationRequest {
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string
+  location?: string
+  position: string
+  experience: string
+  skills: string
+  github?: string
+  linkedin?: string
+  portfolio?: string
+  coverLetter: string
+  availability: 'full-time' | 'part-time' | 'contract' | 'freelance'
+}
+
+export interface UpdateTeamRegistrationRequest {
+  id: string
+  status: 'pending' | 'approved' | 'rejected'
+  notes?: string
+  reviewedBy?: string
+}
+
+export interface TeamRegistrationFilters extends PaginationParams {
+  status?: 'pending' | 'approved' | 'rejected'
+  position?: string
+  experience?: string
+  availability?: string
+  search?: string
+  dateFrom?: string
+  dateTo?: string
+}
+
 // Contact types
 export interface ContactSubmission extends BaseEntity {
   name: string
@@ -131,6 +189,25 @@ export type Permission =
   | 'manage_hero'
   | 'view_analytics'
   | 'manage_users'
+
+// Firebase Admin User types (for authentication)
+export interface FirebaseAdminUser {
+  uid: string
+  email: string
+  displayName?: string
+  role: 'admin' | 'team-member'
+  isApproved: boolean
+  createdAt: Date
+  lastLoginAt?: Date
+  createdBy?: string
+  createdByEmail?: string
+  promotedBy?: string
+  promotedByEmail?: string
+  promotedAt?: Date
+  demotedBy?: string
+  demotedByEmail?: string
+  demotedAt?: Date
+}
 
 // API Response types
 export interface ApiResponse<T = any> {
