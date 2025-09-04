@@ -22,6 +22,7 @@ import {
   AlertTriangle,
   Trash2
 } from 'lucide-react'
+import Avatar from '@/components/ui/Avatar'
 import { usePage } from '@/contexts/PageContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { TeamRegistration, UpdateTeamRegistrationRequest } from '@/lib/types'
@@ -447,10 +448,13 @@ const PendingApprovals = () => {
               registrations.map((registration) => (
                 <div key={registration.id} className="px-6 py-4 hover:bg-gray-50">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                        <User className="h-5 w-5 text-primary-600" />
-                      </div>
+                                      <div className="flex items-center space-x-4">
+                    <Avatar
+                      src={registration.avatar}
+                      name={`${registration.firstName} ${registration.lastName}`}
+                      size="sm"
+                      className="flex-shrink-0"
+                    />
                       <div>
                         <h3 className="text-sm font-medium text-gray-900">
                           {registration.firstName} {registration.lastName}

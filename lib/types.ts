@@ -51,7 +51,7 @@ export interface Service extends BaseEntity {
   }
 }
 
-// Team Member types
+// Team Member types (now derived from approved TeamRegistration)
 export interface TeamMember extends BaseEntity {
   name: string
   role: string
@@ -71,6 +71,10 @@ export interface TeamMember extends BaseEntity {
   experience: number
   location?: string
   availability: 'available' | 'busy' | 'unavailable'
+  // Additional fields from TeamRegistration
+  originalRegistrationId?: string
+  position?: string
+  coverLetter?: string
 }
 
 export type TeamStatus = 'active' | 'inactive'
@@ -96,6 +100,7 @@ export interface TeamRegistration {
   reviewedAt?: string
   reviewedBy?: string
   notes?: string
+  avatar?: string
   createdAt: string
   updatedAt: string
 }
@@ -114,6 +119,7 @@ export interface CreateTeamRegistrationRequest {
   portfolio?: string
   coverLetter: string
   availability: 'full-time' | 'part-time' | 'contract' | 'freelance'
+  avatar?: string
 }
 
 export interface UpdateTeamRegistrationRequest {

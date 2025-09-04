@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { 
   Plus, 
-  Edit, 
-  Trash2, 
+  Edit,
+  Trash2,
   Github, 
   Linkedin, 
   Twitter, 
@@ -18,22 +18,21 @@ import {
   Loader2
 } from 'lucide-react'
 import { usePage } from '@/contexts/PageContext'
+import { useAuth } from '@/contexts/AuthContext'
 import {
-  useTeamMembers,
-  useUpdateTeamMember,
-  useDeleteTeamMember
+  useTeamMembers
 } from '@/hooks/useApi'
 import { TeamMember, TeamFilters } from '@/lib/types'
+import Avatar from '@/components/ui/Avatar'
 
 const TeamManagement = () => {
   const { setPageInfo } = usePage()
-  const [showAddModal, setShowAddModal] = useState(false)
-  const [editingMember, setEditingMember] = useState<TeamMember | null>(null)
+  const { isAdmin } = useAuth()
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState('all')
 
   useEffect(() => {
-    setPageInfo('Team Management', 'Manage team members and their roles.')
+    setPageInfo('Team Management', 'View approved team members. New members are added through the approval process.')
   }, [setPageInfo])
 
   // API filters
@@ -44,27 +43,15 @@ const TeamManagement = () => {
 
   // API hooks
   const { data: teamMembers = [], loading, error, refetch } = useTeamMembers(filters)
-  const { updateTeamMember, loading: updateLoading } = useUpdateTeamMember()
-  const { deleteTeamMember, loading: deleteLoading } = useDeleteTeamMember()
 
-  const handleDeleteMember = async (id: number) => {
-    if (confirm('Are you sure you want to remove this team member?')) {
-      try {
-        await deleteTeamMember(id)
-        refetch() // Refresh the data
-      } catch (error) {
-        console.error('Failed to delete team member:', error)
-      }
-    }
+  const handleEditMember = (member: TeamMember) => {
+    // TODO: Implement edit functionality
+    console.log('Edit member:', member)
   }
 
-  const handleStatusChange = async (id: number, newStatus: string) => {
-    try {
-      await updateTeamMember({ id, status: newStatus })
-      refetch() // Refresh the data
-    } catch (error) {
-      console.error('Failed to update team member status:', error)
-    }
+  const handleDeleteMember = (member: TeamMember) => {
+    // TODO: Implement delete functionality
+    console.log('Delete member:', member)
   }
 
   const getStatusColor = (status: string) => {
@@ -93,16 +80,6 @@ const TeamManagement = () => {
 
   return (
     <div className="p-6 space-y-6">
-        {/* Add Team Member Button */}
-        <div className="flex justify-end">
-          <button 
-            onClick={() => setShowAddModal(true)}
-            className="btn-primary flex items-center"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Team Member
-          </button>
-        </div>
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -202,16 +179,14 @@ const TeamManagement = () => {
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-4">
-                        <div className="relative">
-                          <img
-                            src={member.image}
-                            alt={member.name}
-                            className="w-16 h-16 rounded-full object-cover border-4 border-white shadow-lg"
-                          />
-                          <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-gradient-to-r ${member.color} flex items-center justify-center shadow-lg`}>
-                            <IconComponent className="h-3 w-3 text-white" />
-                          </div>
-                        </div>
+                        <Avatar
+                          src={member.image}
+                          alt={member.name}
+                          name={member.name}
+                          size="lg"
+                          roleIcon={IconComponent}
+                          roleIconColor={member.color}
+                        />
                         <div>
                           <h3 className="text-lg font-semibold text-gray-900">{member.name}</h3>
                           <p className="text-primary-600 font-medium text-sm">{member.role}</p>
@@ -220,20 +195,24 @@ const TeamManagement = () => {
                           </span>
                         </div>
                       </div>
-                      <div className="flex space-x-1">
-                        <button 
-                          onClick={() => setEditingMember(member)}
-                          className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleDeleteMember(member.id)}
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
+                      {isAdmin() && (
+                        <div className="flex space-x-1">
+                          <button 
+                            onClick={() => handleEditMember(member)}
+                            className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                            title="Edit member"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteMember(member)}
+                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Delete member"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      )}
                     </div>
 
                     <p className="text-gray-600 text-sm mb-4 line-clamp-2">{member.bio}</p>
@@ -321,40 +300,19 @@ const TeamManagement = () => {
             <p className="text-gray-600 mb-4">
               {searchTerm || filterStatus !== 'all'
                 ? 'Try adjusting your filters to see more members.'
-                : 'Get started by adding your first team member.'}
+                : 'No team members have been approved yet. Check the Approvals page to review pending applications.'}
             </p>
-            <button 
-              onClick={() => setShowAddModal(true)}
-              className="btn-primary flex items-center mx-auto"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Team Member
-            </button>
+            <p className="text-gray-600">
+              <a 
+                href="/admin/approvals"
+                className="text-primary-600 hover:text-primary-800 underline"
+              >
+                Review Applications
+              </a>
+            </p>
           </div>
         )}
 
-        {/* Add/Edit Modal would go here */}
-        {showAddModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Add New Team Member</h2>
-                {/* Modal content would go here */}
-                <div className="flex justify-end space-x-3">
-                  <button 
-                    onClick={() => setShowAddModal(false)}
-                    className="btn-secondary"
-                  >
-                    Cancel
-                  </button>
-                  <button className="btn-primary">
-                    Save Member
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
     </div>
   )
 }

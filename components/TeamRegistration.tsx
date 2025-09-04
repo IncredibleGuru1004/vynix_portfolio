@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { 
   User, 
@@ -16,8 +16,11 @@ import {
   Linkedin,
   FileText,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Camera,
+  X
 } from 'lucide-react'
+import Avatar from '@/components/ui/Avatar'
 
 const TeamRegistration = () => {
   const [formData, setFormData] = useState({
@@ -33,11 +36,14 @@ const TeamRegistration = () => {
     linkedin: '',
     portfolio: '',
     coverLetter: '',
-    availability: 'full-time'
+    availability: 'full-time',
+    avatar: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState('')
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const positions = [
     'Frontend Developer',
@@ -58,6 +64,46 @@ const TeamRegistration = () => {
       [e.target.name]: e.target.value
     })
     setError('')
+  }
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError('Please select a valid image file')
+        return
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image size must be less than 5MB')
+        return
+      }
+
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        const result = event.target?.result as string
+        setAvatarPreview(result)
+        setFormData({
+          ...formData,
+          avatar: result
+        })
+      }
+      reader.readAsDataURL(file)
+      setError('')
+    }
+  }
+
+  const removeAvatar = () => {
+    setAvatarPreview(null)
+    setFormData({
+      ...formData,
+      avatar: ''
+    })
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -137,8 +183,10 @@ const TeamRegistration = () => {
                   linkedin: '',
                   portfolio: '',
                   coverLetter: '',
-                  availability: 'full-time'
+                  availability: 'full-time',
+                  avatar: ''
                 })
+                setAvatarPreview(null)
               }}
               className="w-full btn-secondary"
             >
@@ -185,6 +233,53 @@ const TeamRegistration = () => {
                 <User className="h-6 w-6 mr-3 text-primary-600" />
                 Personal Information
               </h2>
+              
+              {/* Avatar Upload */}
+              <div className="mb-8">
+                <label className="block text-sm font-medium text-gray-700 mb-4">
+                  Profile Photo (Optional)
+                </label>
+                <div className="flex items-center space-x-6">
+                  <div className="relative">
+                    <Avatar
+                      src={avatarPreview || undefined}
+                      name={`${formData.firstName} ${formData.lastName}`}
+                      size="xl"
+                      className="border-4 border-white shadow-lg"
+                    />
+                    {avatarPreview && (
+                      <button
+                        type="button"
+                        onClick={removeAvatar}
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      className="hidden"
+                      id="avatar-upload"
+                    />
+                    <label
+                      htmlFor="avatar-upload"
+                      className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer transition-colors"
+                    >
+                      <Camera className="h-4 w-4 mr-2" />
+                      {avatarPreview ? 'Change Photo' : 'Upload Photo'}
+                    </label>
+                    <p className="text-xs text-gray-500 mt-2">
+                      JPG, PNG or GIF. Max size 5MB.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">

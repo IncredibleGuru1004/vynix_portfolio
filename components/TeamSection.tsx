@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { Github, Linkedin, Twitter, Mail, Code, Smartphone, Cloud, Database, Shield, Zap } from 'lucide-react'
 import { useTeamMembers } from '@/hooks/useApi'
+import Avatar from '@/components/ui/Avatar'
 
 const TeamSection = () => {
   const { data: teamMembers = [], loading, error } = useTeamMembers({ status: 'active' })
@@ -48,99 +49,7 @@ const TeamSection = () => {
     )
   }
 
-  // Fallback team members if API returns empty
-  const fallbackTeamMembers = [
-    {
-      name: 'Sarah Chen',
-      role: 'Lead Full-Stack Developer',
-      image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face',
-      bio: 'Expert in React, Node.js, and cloud architecture with 8+ years of experience building scalable web applications.',
-      skills: ['React', 'Node.js', 'AWS', 'TypeScript', 'PostgreSQL'],
-      icon: Code,
-      color: 'from-blue-500 to-blue-600',
-      social: {
-        github: '#',
-        linkedin: '#',
-        twitter: '#',
-        email: undefined
-      }
-    },
-    {
-      name: 'Marcus Rodriguez',
-      role: 'Mobile Development Specialist',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face',
-      bio: 'Passionate mobile developer specializing in React Native and Flutter with expertise in cross-platform solutions.',
-      skills: ['React Native', 'Flutter', 'Swift', 'Kotlin', 'Firebase'],
-      icon: Smartphone,
-      color: 'from-purple-500 to-purple-600',
-      social: {
-        github: '#',
-        linkedin: '#',
-        twitter: '#',
-        email: undefined
-      }
-    },
-    {
-      name: 'Emily Watson',
-      role: 'DevOps & Cloud Engineer',
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face',
-      bio: 'Cloud infrastructure expert with deep knowledge of AWS, Azure, and containerization technologies.',
-      skills: ['AWS', 'Docker', 'Kubernetes', 'Terraform', 'Jenkins'],
-      icon: Cloud,
-      color: 'from-orange-500 to-orange-600',
-      social: {
-        github: '#',
-        linkedin: '#',
-        twitter: '#',
-        email: undefined
-      }
-    },
-    {
-      name: 'David Kim',
-      role: 'Backend & Database Architect',
-      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
-      bio: 'Database design specialist with expertise in both SQL and NoSQL solutions for high-performance applications.',
-      skills: ['Python', 'PostgreSQL', 'MongoDB', 'Redis', 'GraphQL'],
-      icon: Database,
-      color: 'from-green-500 to-green-600',
-      social: {
-        github: '#',
-        linkedin: '#',
-        twitter: '#',
-        email: undefined
-      }
-    },
-    {
-      name: 'Lisa Thompson',
-      role: 'Security & QA Engineer',
-      image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=400&fit=crop&crop=face',
-      bio: 'Security-focused engineer ensuring applications meet enterprise-grade security standards and compliance requirements.',
-      skills: ['Security Testing', 'Penetration Testing', 'GDPR', 'HIPAA', 'Automation'],
-      icon: Shield,
-      color: 'from-red-500 to-red-600',
-      social: {
-        github: '#',
-        linkedin: '#',
-        twitter: '#',
-        email: undefined
-      }
-    },
-    {
-      name: 'Alex Johnson',
-      role: 'Performance & Optimization Expert',
-      image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face',
-      bio: 'Performance optimization specialist focused on creating lightning-fast, scalable applications with modern tools.',
-      skills: ['Performance Tuning', 'Caching', 'CDN', 'Monitoring', 'Analytics'],
-      icon: Zap,
-      color: 'from-yellow-500 to-yellow-600',
-      social: {
-        github: '#',
-        linkedin: '#',
-        twitter: '#',
-        email: undefined
-      }
-    }
-  ]
+  // No fallback data - team members come from approved applications
 
   const stats = [
     { number: '50+', label: 'Years Combined Experience' },
@@ -208,14 +117,15 @@ const TeamSection = () => {
         </motion.div>
 
         {/* Team Members */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
-        >
-          {((teamMembers && teamMembers.length > 0) ? teamMembers : fallbackTeamMembers).map((member, index) => {
+        {teamMembers && teamMembers.length > 0 ? (
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+            {teamMembers.map((member, index) => {
             const IconComponent = getIconComponent(typeof member.icon === 'string' ? member.icon : 'Code')
             return (
               <motion.div
@@ -224,15 +134,16 @@ const TeamSection = () => {
                 className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group"
               >
                 {/* Member Image */}
-                <div className="relative mb-6">
-                  <img
+                <div className="relative mb-6 flex justify-center">
+                  <Avatar
                     src={member.image}
                     alt={member.name}
-                    className="w-24 h-24 rounded-full mx-auto object-cover border-4 border-white shadow-lg"
+                    name={member.name}
+                    size="2xl"
+                    roleIcon={IconComponent}
+                    roleIconColor={member.color}
+                    className="mx-auto"
                   />
-                  <div className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-gradient-to-r ${member.color} flex items-center justify-center shadow-lg`}>
-                    <IconComponent className="h-4 w-4 text-white" />
-                  </div>
                 </div>
 
               {/* Member Info */}
@@ -306,7 +217,35 @@ const TeamSection = () => {
             </motion.div>
             )
           })}
-        </motion.div>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center py-16"
+          >
+            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Code className="h-12 w-12 text-gray-400" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              Our Team is Growing
+            </h3>
+            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+              We're currently building our amazing team. Check back soon to meet our talented professionals who will be joining us.
+            </p>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-md mx-auto">
+              <p className="text-blue-800 font-medium mb-2">Interested in joining our team?</p>
+              <a 
+                href="/register" 
+                className="text-blue-600 hover:text-blue-800 underline"
+              >
+                Apply to become a team member
+              </a>
+            </div>
+          </motion.div>
+        )}
 
         {/* Team Culture */}
         <motion.div

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Bell, User, LogOut, Menu } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePage } from '@/contexts/PageContext'
+import Avatar from '@/components/ui/Avatar'
 
 interface AdminHeaderProps {
   onMenuToggle: () => void
@@ -81,9 +82,14 @@ const AdminHeader = ({ onMenuToggle, isSidebarOpen }: AdminHeaderProps) => {
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 className="flex items-center space-x-2 sm:space-x-3 p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                  <User className="h-4 w-4 text-primary-600" />
-                </div>
+                <Avatar
+                  src={undefined} // Admin users don't have photoURL in our current setup
+                  name={user?.displayName || (isAdmin() ? 'Admin User' : 'Team Member')}
+                  size="sm"
+                  showStatus
+                  status="online"
+                  className="flex-shrink-0"
+                />
                 <div className="text-left hidden sm:block">
                   <p className="text-sm font-medium">
                     {user?.displayName || (isAdmin() ? 'Admin User' : 'Team Member')}
