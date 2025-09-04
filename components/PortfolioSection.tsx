@@ -177,11 +177,11 @@ const PortfolioSection = () => {
           viewport={{ once: true }}
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {(projects.length > 0 ? projects : fallbackProjects).map((project, index) => {
+          {((projects && projects.length > 0) ? projects : fallbackProjects).map((project, index) => {
             const CategoryIcon = getCategoryIcon(project.category)
             return (
               <motion.div
-                key={project.id || index}
+                key={'id' in project ? project.id : index}
                 variants={itemVariants}
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 group"
               >

@@ -177,7 +177,7 @@ const ProjectManagement = () => {
         {/* Projects Grid */}
         {!loading && !error && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects?.map((project) => {
+            {projects && projects.map((project) => {
               const CategoryIcon = getCategoryIcon(project.category)
               return (
                 <div key={project.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

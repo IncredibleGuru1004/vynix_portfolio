@@ -174,11 +174,11 @@ const ServicesSection = () => {
           viewport={{ once: true }}
           className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
         >
-          {(services.length > 0 ? services : fallbackServices).map((service, index) => {
-            const IconComponent = getIconComponent(service.icon)
+          {((services && services.length > 0) ? services : fallbackServices).map((service, index) => {
+            const IconComponent = getIconComponent(typeof service.icon === 'string' ? service.icon : 'Code')
             return (
               <motion.div
-                key={service.id || index}
+                key={'id' in service ? service.id : index}
                 variants={itemVariants}
                 className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group"
               >

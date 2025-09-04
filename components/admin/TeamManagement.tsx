@@ -194,7 +194,7 @@ const TeamManagement = () => {
         {/* Team Members Grid */}
         {!loading && !error && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {teamMembers?.map((member) => {
+            {teamMembers && teamMembers.map((member) => {
               const IconComponent = getIconComponent(member.icon)
               return (
                 <div key={member.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

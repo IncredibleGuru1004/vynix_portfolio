@@ -191,8 +191,8 @@ const ServicesManagement = () => {
         {/* Services Grid */}
         {!loading && !error && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services
-              ?.sort((a, b) => a.order - b.order)
+            {services && services
+              .sort((a, b) => a.order - b.order)
               .map((service) => {
                 return (
                   <div key={service.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

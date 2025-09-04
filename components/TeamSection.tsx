@@ -209,11 +209,11 @@ const TeamSection = () => {
           viewport={{ once: true }}
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {(teamMembers.length > 0 ? teamMembers : fallbackTeamMembers).map((member, index) => {
-            const IconComponent = getIconComponent(member.icon)
+          {((teamMembers && teamMembers.length > 0) ? teamMembers : fallbackTeamMembers).map((member, index) => {
+            const IconComponent = getIconComponent(typeof member.icon === 'string' ? member.icon : 'Code')
             return (
               <motion.div
-                key={member.id || index}
+                key={'id' in member ? member.id : index}
                 variants={itemVariants}
                 className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group"
               >

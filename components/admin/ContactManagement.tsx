@@ -245,7 +245,7 @@ const ContactManagement = () => {
           {!loading && !error && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-200">
               <div className="divide-y divide-gray-200">
-                {contacts?.map((contact) => {
+                {contacts && contacts.map((contact) => {
                 const StatusIcon = getStatusIcon(contact.status)
                 return (
                   <div
