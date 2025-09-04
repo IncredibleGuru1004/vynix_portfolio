@@ -254,14 +254,55 @@ const PendingApprovals = () => {
     }
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
+  const formatDate = (dateString: string | Date) => {
+    try {
+      let date: Date
+      
+      if (dateString instanceof Date) {
+        date = dateString
+      } else if (typeof dateString === 'string') {
+        // Handle different date formats
+        if (dateString.includes('T')) {
+          // ISO string format
+          date = new Date(dateString)
+        } else if (dateString.includes('/')) {
+          // Date with slashes
+          date = new Date(dateString)
+        } else if (dateString.includes('-')) {
+          // Date with dashes
+          date = new Date(dateString)
+        } else {
+          // Try parsing as timestamp
+          const timestamp = parseInt(dateString)
+          if (!isNaN(timestamp)) {
+            // Check if it's in seconds or milliseconds
+            date = new Date(timestamp > 1000000000000 ? timestamp : timestamp * 1000)
+          } else {
+            date = new Date(dateString)
+          }
+        }
+      } else {
+        console.warn('Invalid date format:', dateString)
+        return 'Invalid Date'
+      }
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date:', dateString)
+        return 'Invalid Date'
+      }
+      
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+    } catch (error) {
+      console.error('Error formatting date:', error, 'Input:', dateString)
+      return 'Invalid Date'
+    }
   }
 
   const copyToClipboard = async (text: string, label: string) => {

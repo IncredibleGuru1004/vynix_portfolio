@@ -29,11 +29,31 @@ export async function GET(
       )
     }
     
+    // Helper function to convert Firebase Timestamp to ISO string
+    const convertTimestamp = (timestamp: any) => {
+      if (!timestamp) return null
+      if (timestamp.toDate && typeof timestamp.toDate === 'function') {
+        // Firebase Timestamp object
+        return timestamp.toDate().toISOString()
+      } else if (timestamp.seconds) {
+        // Serialized Timestamp object
+        return new Date(timestamp.seconds * 1000).toISOString()
+      } else if (typeof timestamp === 'string') {
+        // Already a string
+        return timestamp
+      } else if (timestamp instanceof Date) {
+        // Already a Date object
+        return timestamp.toISOString()
+      }
+      return timestamp
+    }
+    
     const registration: TeamRegistration = {
       id: docSnap.id,
       ...data,
-      createdAt: data.createdAt || data.submittedAt,
-      updatedAt: data.updatedAt || data.submittedAt,
+      submittedAt: convertTimestamp(data.submittedAt),
+      createdAt: convertTimestamp(data.createdAt) || convertTimestamp(data.submittedAt),
+      updatedAt: convertTimestamp(data.updatedAt) || convertTimestamp(data.submittedAt),
     } as unknown as TeamRegistration
 
     const response: ApiResponse<TeamRegistration> = {
@@ -96,11 +116,31 @@ export async function PUT(
       )
     }
     
+    // Helper function to convert Firebase Timestamp to ISO string
+    const convertTimestamp = (timestamp: any) => {
+      if (!timestamp) return null
+      if (timestamp.toDate && typeof timestamp.toDate === 'function') {
+        // Firebase Timestamp object
+        return timestamp.toDate().toISOString()
+      } else if (timestamp.seconds) {
+        // Serialized Timestamp object
+        return new Date(timestamp.seconds * 1000).toISOString()
+      } else if (typeof timestamp === 'string') {
+        // Already a string
+        return timestamp
+      } else if (timestamp instanceof Date) {
+        // Already a Date object
+        return timestamp.toISOString()
+      }
+      return timestamp
+    }
+    
     const updatedRegistration: TeamRegistration = {
       id: updatedDoc.id,
       ...data,
-      createdAt: data.createdAt || data.submittedAt,
-      updatedAt: data.updatedAt || data.submittedAt,
+      submittedAt: convertTimestamp(data.submittedAt),
+      createdAt: convertTimestamp(data.createdAt) || convertTimestamp(data.submittedAt),
+      updatedAt: convertTimestamp(data.updatedAt) || convertTimestamp(data.submittedAt),
     } as unknown as TeamRegistration
 
     const response: ApiResponse<TeamRegistration> = {
