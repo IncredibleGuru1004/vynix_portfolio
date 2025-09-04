@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   Save, 
   Eye, 
   RefreshCw, 
   Loader2
 } from 'lucide-react'
-import PageHeader from './PageHeader'
+import { usePage } from '@/contexts/PageContext'
 import {
   useActiveHeroContent,
   useUpdateHeroContent
@@ -15,12 +15,17 @@ import {
 import { HeroContent } from '@/lib/types'
 
 const HeroManagement = () => {
+  const { setPageInfo } = usePage()
   const [isPreviewMode, setIsPreviewMode] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
   // API hooks
   const { data: heroContent, loading, error, refetch } = useActiveHeroContent()
   const { updateHeroContent, loading: updateLoading } = useUpdateHeroContent()
+
+  useEffect(() => {
+    setPageInfo('Hero Management', 'Manage the main hero section content and settings.')
+  }, [setPageInfo])
 
   const handleInputChange = async (field: string, value: string) => {
     if (!heroContent) return
@@ -72,35 +77,30 @@ const HeroManagement = () => {
   }
 
   return (
-    <div>
-      <PageHeader 
-        title="Hero Section Management" 
-        subtitle="Customize your homepage hero section content and messaging."
-      />
-      <div className="p-6 space-y-6">
-        {/* Loading State */}
-        {loading && (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
-            <span className="ml-2 text-gray-600">Loading hero content...</span>
-          </div>
-        )}
+    <div className="p-6 space-y-6">
+      {/* Loading State */}
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
+          <span className="ml-2 text-gray-600">Loading hero content...</span>
+        </div>
+      )}
 
-        {/* Error State */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <p className="text-red-800">Error loading hero content: {error}</p>
-            <button
-              onClick={refetch}
-              className="mt-2 text-red-600 hover:text-red-800 underline"
-            >
-              Try again
-            </button>
-          </div>
-        )}
+      {/* Error State */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+          <p className="text-red-800">Error loading hero content: {error}</p>
+          <button
+            onClick={refetch}
+            className="mt-2 text-red-600 hover:text-red-800 underline"
+          >
+            Try again
+          </button>
+        </div>
+      )}
 
-        {/* Content */}
-        {!loading && !error && heroContent && (
+      {/* Content */}
+      {!loading && !error && heroContent && (
           <>
             {/* Action Buttons */}
             <div className="flex justify-end space-x-3">
@@ -313,7 +313,6 @@ const HeroManagement = () => {
             </div>
           </>
         )}
-      </div>
     </div>
   )
 }

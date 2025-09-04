@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Plus,
   Edit,
@@ -16,7 +16,7 @@ import {
   Monitor,
   Loader2
 } from 'lucide-react'
-import PageHeader from './PageHeader'
+import { usePage } from '@/contexts/PageContext'
 import {
   useServices,
   useUpdateService,
@@ -25,9 +25,14 @@ import {
 import { Service, ServiceFilters } from '@/lib/types'
 
 const ServicesManagement = () => {
+  const { setPageInfo } = usePage()
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingService, setEditingService] = useState<Service | null>(null)
   const [filterActive, setFilterActive] = useState('all')
+
+  useEffect(() => {
+    setPageInfo('Services Management', 'Manage your service offerings and pricing.')
+  }, [setPageInfo])
 
   // API filters
   const filters: ServiceFilters = {
@@ -91,22 +96,17 @@ const ServicesManagement = () => {
   }
 
   return (
-    <div>
-      <PageHeader 
-        title="Services Management" 
-        subtitle="Manage your service offerings and technology stack."
-      />
-      <div className="p-6 space-y-6">
-        {/* Add Service Button */}
-        <div className="flex justify-end">
-          <button 
-            onClick={() => setShowAddModal(true)}
-            className="btn-primary flex items-center"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Service
-          </button>
-        </div>
+    <div className="p-6 space-y-6">
+      {/* Add Service Button */}
+      <div className="flex justify-end">
+        <button 
+          onClick={() => setShowAddModal(true)}
+          className="btn-primary flex items-center"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add Service
+        </button>
+      </div>
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -327,7 +327,6 @@ const ServicesManagement = () => {
             </div>
           </div>
         )}
-      </div>
     </div>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import {
   LayoutDashboard,
@@ -16,8 +16,7 @@ import {
   ChevronRight,
   X,
   UserCheck,
-  Clock,
-  LogOut
+  Clock
 } from 'lucide-react'
 
 interface AdminSidebarProps {
@@ -28,19 +27,8 @@ interface AdminSidebarProps {
 
 const AdminSidebar = ({ isOpen, onClose, onMenuToggle }: AdminSidebarProps) => {
   const pathname = usePathname()
-  const router = useRouter()
-  const { isAdmin, signOut } = useAuth()
+  const { isAdmin } = useAuth()
   const [expandedSections, setExpandedSections] = useState<string[]>(['content'])
-
-  const handleSignOut = async () => {
-    try {
-      await signOut()
-      router.push('/admin/login')
-    } catch (error) {
-      console.error('Sign out error:', error)
-      router.push('/admin/login')
-    }
-  }
 
   const menuItems = [
     {
@@ -217,16 +205,6 @@ const AdminSidebar = ({ isOpen, onClose, onMenuToggle }: AdminSidebarProps) => {
           </ul>
         </nav>
 
-        {/* Sign Out Button */}
-        <div className="p-4 border-t border-gray-200">
-          <button
-            onClick={handleSignOut}
-            className="w-full flex items-center justify-center px-3 py-2 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            Sign Out
-          </button>
-        </div>
       </aside>
     </>
   )

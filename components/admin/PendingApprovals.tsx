@@ -17,7 +17,7 @@ import {
   ExternalLink,
   FileText
 } from 'lucide-react'
-import PageHeader from './PageHeader'
+import { usePage } from '@/contexts/PageContext'
 
 interface PendingRegistration {
   id: string
@@ -39,13 +39,15 @@ interface PendingRegistration {
 }
 
 const PendingApprovals = () => {
+  const { setPageInfo } = usePage()
   const [registrations, setRegistrations] = useState<PendingRegistration[]>([])
   const [selectedRegistration, setSelectedRegistration] = useState<PendingRegistration | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    setPageInfo('Team Approvals', 'Review and approve new team member registrations.')
     loadRegistrations()
-  }, [])
+  }, [setPageInfo])
 
   const loadRegistrations = () => {
     const pendingRegistrations = JSON.parse(localStorage.getItem('pendingRegistrations') || '[]')
@@ -130,17 +132,12 @@ const PendingApprovals = () => {
   }
 
   return (
-    <div>
-      <PageHeader 
-        title="Team Member Approvals" 
-        subtitle="Review and approve new team member applications"
-      />
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-500">
-            {registrations.filter(r => r.status === 'pending').length} pending applications
-          </div>
+    <div className="p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-gray-500">
+          {registrations.filter(r => r.status === 'pending').length} pending applications
         </div>
+      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -406,7 +403,6 @@ const PendingApprovals = () => {
           </div>
         </div>
       )}
-      </div>
     </div>
   )
 }

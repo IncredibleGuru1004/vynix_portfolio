@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   Plus, 
   Edit, 
@@ -17,7 +17,7 @@ import {
   Zap,
   Loader2
 } from 'lucide-react'
-import PageHeader from './PageHeader'
+import { usePage } from '@/contexts/PageContext'
 import {
   useTeamMembers,
   useUpdateTeamMember,
@@ -26,10 +26,15 @@ import {
 import { TeamMember, TeamFilters } from '@/lib/types'
 
 const TeamManagement = () => {
+  const { setPageInfo } = usePage()
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState('all')
+
+  useEffect(() => {
+    setPageInfo('Team Management', 'Manage team members and their roles.')
+  }, [setPageInfo])
 
   // API filters
   const filters: TeamFilters = {
@@ -87,12 +92,7 @@ const TeamManagement = () => {
   }
 
   return (
-    <div>
-      <PageHeader 
-        title="Team Management" 
-        subtitle="Manage your team members and their profiles."
-      />
-      <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6">
         {/* Add Team Member Button */}
         <div className="flex justify-end">
           <button 
@@ -355,7 +355,6 @@ const TeamManagement = () => {
             </div>
           </div>
         )}
-      </div>
     </div>
   )
 }

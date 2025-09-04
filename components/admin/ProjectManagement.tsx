@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   Plus, 
   Edit, 
@@ -16,7 +16,7 @@ import {
   Tag,
   Loader2
 } from 'lucide-react'
-import PageHeader from './PageHeader'
+import { usePage } from '@/contexts/PageContext'
 import { 
   useProjects, 
   useUpdateProject, 
@@ -25,11 +25,16 @@ import {
 import { Project, ProjectFilters } from '@/lib/types'
 
 const ProjectManagement = () => {
+  const { setPageInfo } = usePage()
   const [searchTerm, setSearchTerm] = useState('')
   const [filterCategory, setFilterCategory] = useState('all')
   const [filterStatus, setFilterStatus] = useState('all')
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingProject, setEditingProject] = useState<Project | null>(null)
+
+  useEffect(() => {
+    setPageInfo('Project Management', 'Manage your portfolio projects and showcase your work.')
+  }, [setPageInfo])
 
   // API filters
   const filters: ProjectFilters = {
@@ -95,22 +100,17 @@ const ProjectManagement = () => {
   }
 
   return (
-    <div>
-      <PageHeader 
-        title="Project Management" 
-        subtitle="Manage your portfolio projects and showcase your work."
-      />
-      <div className="p-6 space-y-6">
-        {/* Add Project Button */}
-        <div className="flex justify-end">
-          <button 
-            onClick={() => setShowAddModal(true)}
-            className="btn-primary flex items-center"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Project
-          </button>
-        </div>
+    <div className="p-6 space-y-6">
+      {/* Add Project Button */}
+      <div className="flex justify-end">
+        <button 
+          onClick={() => setShowAddModal(true)}
+          className="btn-primary flex items-center"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add Project
+        </button>
+      </div>
 
         {/* Filters */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
@@ -307,7 +307,6 @@ const ProjectManagement = () => {
             </div>
           </div>
         )}
-      </div>
     </div>
   )
 }

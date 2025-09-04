@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   Mail, 
   Phone, 
@@ -16,7 +16,7 @@ import {
   AlertCircle,
   Loader2
 } from 'lucide-react'
-import PageHeader from './PageHeader'
+import { usePage } from '@/contexts/PageContext'
 import { 
   useContacts, 
   useUpdateContact, 
@@ -25,10 +25,15 @@ import {
 import { ContactSubmission, ContactFilters } from '@/lib/types'
 
 const ContactManagement = () => {
+  const { setPageInfo } = usePage()
   const [selectedContact, setSelectedContact] = useState<ContactSubmission | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState('all')
   const [filterProject, setFilterProject] = useState('all')
+
+  useEffect(() => {
+    setPageInfo('Contact Management', 'Manage contact form submissions and client inquiries.')
+  }, [setPageInfo])
 
   // API filters
   const filters: ContactFilters = {
@@ -120,13 +125,7 @@ const ContactManagement = () => {
   }
 
   return (
-    <div>
-      <PageHeader 
-        title="Contact Management" 
-        subtitle="Manage contact form submissions and client inquiries."
-      />
-      <div className="p-6 space-y-6">
-
+    <div className="p-6 space-y-6">
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
@@ -401,7 +400,6 @@ const ContactManagement = () => {
             </div>
           )}
         </div>
-      </div>
       </div>
     </div>
   )

@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import AdminSidebar from '@/components/admin/AdminSidebar'
+import AdminHeader from '@/components/admin/AdminHeader'
 import AdminAuthGuard from '@/components/admin/AdminAuthGuard'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { PageProvider } from '@/contexts/PageContext'
 
 export default function AdminLayout({
   children,
@@ -45,16 +47,21 @@ export default function AdminLayout({
 
   return (
     <AuthProvider>
-      <AdminAuthGuard>
-        <div className="min-h-screen bg-gray-50 flex">
-          <AdminSidebar isOpen={isSidebarOpen} onClose={closeSidebar} onMenuToggle={toggleSidebar} />
-          <main className={`flex-1 transition-all duration-300 ${
-            isSidebarOpen ? 'lg:ml-64' : 'lg:ml-64'
-          }`}>
-            {children}
-          </main>
-        </div>
-      </AdminAuthGuard>
+      <PageProvider>
+        <AdminAuthGuard>
+          <div className="min-h-screen bg-gray-50">
+            <AdminHeader isSidebarOpen={isSidebarOpen} onMenuToggle={toggleSidebar} />
+            <div className="flex">
+              <AdminSidebar isOpen={isSidebarOpen} onClose={closeSidebar} onMenuToggle={toggleSidebar} />
+              <main className={`flex-1 transition-all duration-300 pt-20 ${
+                isSidebarOpen ? 'lg:ml-64' : 'lg:ml-64'
+              }`}>
+                {children}
+              </main>
+            </div>
+          </div>
+        </AdminAuthGuard>
+      </PageProvider>
     </AuthProvider>
   )
 }

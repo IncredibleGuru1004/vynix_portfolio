@@ -12,9 +12,15 @@ import {
   Edit,
   Trash2
 } from 'lucide-react'
-import PageHeader from './PageHeader'
+import { usePage } from '@/contexts/PageContext'
 
 const AdminDashboard = () => {
+  const { setPageInfo } = usePage()
+  
+  useEffect(() => {
+    setPageInfo('Dashboard', 'Welcome back! Here\'s what\'s happening with your portfolio.')
+  }, [setPageInfo])
+  
   const [stats, setStats] = useState({
     totalProjects: 6,
     totalTeamMembers: 6,
@@ -112,23 +118,18 @@ const AdminDashboard = () => {
   ]
 
   return (
-    <div>
-      <PageHeader 
-        title="Dashboard" 
-        subtitle="Welcome back! Here's what's happening with your portfolio."
-      />
-      <div className="p-6 space-y-6">
-        {/* Quick Actions */}
-        <div className="flex justify-end space-x-3">
-          <button className="btn-secondary flex items-center">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Project
-          </button>
-          <button className="btn-primary flex items-center">
-            <Edit className="h-4 w-4 mr-2" />
-            Quick Edit
-          </button>
-        </div>
+    <div className="p-6 space-y-6">
+      {/* Quick Actions */}
+      <div className="flex justify-end space-x-3">
+        <button className="btn-secondary flex items-center">
+          <Plus className="h-4 w-4 mr-2" />
+          Add Project
+        </button>
+        <button className="btn-primary flex items-center">
+          <Edit className="h-4 w-4 mr-2" />
+          Quick Edit
+        </button>
+      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -240,7 +241,6 @@ const AdminDashboard = () => {
             </div>
           </button>
         </div>
-      </div>
       </div>
     </div>
   )

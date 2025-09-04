@@ -148,7 +148,7 @@ const AdminLogin = () => {
             <div className="space-y-2">
               <div>
                 <p className="text-xs text-gray-600">Sign in with your Firebase account</p>
-                <p className="text-xs text-gray-600">Make sure you're registered in the admin database</p>
+                <p className="text-xs text-gray-600">Make sure you&apos;re registered in the admin database</p>
               </div>
               <div>
                 <p className="text-xs text-gray-600 font-medium">Note:</p>
