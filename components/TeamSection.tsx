@@ -61,7 +61,8 @@ const TeamSection = () => {
       social: {
         github: '#',
         linkedin: '#',
-        twitter: '#'
+        twitter: '#',
+        email: undefined
       }
     },
     {
@@ -75,7 +76,8 @@ const TeamSection = () => {
       social: {
         github: '#',
         linkedin: '#',
-        twitter: '#'
+        twitter: '#',
+        email: undefined
       }
     },
     {
@@ -89,7 +91,8 @@ const TeamSection = () => {
       social: {
         github: '#',
         linkedin: '#',
-        twitter: '#'
+        twitter: '#',
+        email: undefined
       }
     },
     {
@@ -103,7 +106,8 @@ const TeamSection = () => {
       social: {
         github: '#',
         linkedin: '#',
-        twitter: '#'
+        twitter: '#',
+        email: undefined
       }
     },
     {
@@ -117,7 +121,8 @@ const TeamSection = () => {
       social: {
         github: '#',
         linkedin: '#',
-        twitter: '#'
+        twitter: '#',
+        email: undefined
       }
     },
     {
@@ -131,7 +136,8 @@ const TeamSection = () => {
       social: {
         github: '#',
         linkedin: '#',
-        twitter: '#'
+        twitter: '#',
+        email: undefined
       }
     }
   ]

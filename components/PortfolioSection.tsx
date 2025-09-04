@@ -201,7 +201,7 @@ const PortfolioSection = () => {
                   </div>
                   <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div className="flex space-x-2">
-                      {project.liveUrl && (
+                      {'liveUrl' in project && project.liveUrl && (
                         <a 
                           href={project.liveUrl} 
                           target="_blank" 
@@ -211,7 +211,7 @@ const PortfolioSection = () => {
                           <ExternalLink className="h-4 w-4 text-white" />
                         </a>
                       )}
-                      {project.githubUrl && (
+                      {'githubUrl' in project && project.githubUrl && (
                         <a 
                           href={project.githubUrl} 
                           target="_blank" 
@@ -264,7 +264,7 @@ const PortfolioSection = () => {
               Ready to Start Your Next Project?
             </h3>
             <p className="text-primary-100 mb-6 max-w-2xl mx-auto">
-              Let's discuss how we can bring your vision to life with cutting-edge technology 
+              Let&apos;s discuss how we can bring your vision to life with cutting-edge technology 
               and expert development practices.
             </p>
             <button className="bg-white text-primary-600 hover:bg-gray-100 font-semibold py-3 px-8 rounded-lg transition-colors duration-200">

@@ -126,7 +126,7 @@ const ContactSection = () => {
             Get In <span className="gradient-text">Touch</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Ready to start your next project? Let's discuss how we can help bring your vision to life 
+            Ready to start your next project? Let&apos;s discuss how we can help bring your vision to life 
             with our expert development team and cutting-edge technology solutions.
           </p>
         </motion.div>
@@ -140,11 +140,11 @@ const ContactSection = () => {
             viewport={{ once: true }}
           >
             <h3 className="text-2xl font-bold text-gray-900 mb-8">
-              Let's Start a Conversation
+              Let&apos;s Start a Conversation
             </h3>
             <p className="text-gray-600 mb-8">
-              We're here to help you succeed. Reach out to us through any of the channels below, 
-              and we'll get back to you within 24 hours.
+              We&apos;re here to help you succeed. Reach out to us through any of the channels below, 
+              and we&apos;ll get back to you within 24 hours.
             </p>
 
             <div className="space-y-6">
@@ -229,7 +229,7 @@ const ContactSection = () => {
                   Thank You!
                 </h4>
                 <p className="text-gray-600">
-                  We've received your message and will get back to you within 24 hours.
+                  We&apos;ve received your message and will get back to you within 24 hours.
                 </p>
               </motion.div>
             ) : (

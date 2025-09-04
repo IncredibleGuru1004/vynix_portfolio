@@ -97,7 +97,7 @@ const TeamRegistration = () => {
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Application Submitted!</h1>
           <p className="text-gray-600 mb-6">
-            Thank you for your interest in joining Vynix Innovations. We've received your application and will review it carefully.
+            Thank you for your interest in joining Vynix Innovations. We&apos;ve received your application and will review it carefully.
           </p>
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <div className="flex items-start">
@@ -106,8 +106,8 @@ const TeamRegistration = () => {
                 <p className="text-sm text-blue-800 font-medium">What happens next?</p>
                 <ul className="text-sm text-blue-700 mt-2 space-y-1">
                   <li>• Our team will review your application</li>
-                  <li>• We'll contact you within 3-5 business days</li>
-                  <li>• If approved, you'll receive admin access</li>
+                  <li>• We&apos;ll contact you within 3-5 business days</li>
+                  <li>• If approved, you&apos;ll receive admin access</li>
                 </ul>
               </div>
             </div>
