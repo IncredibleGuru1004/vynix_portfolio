@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import { Bell, User, LogOut, Settings, Menu } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface AdminHeaderProps {
   onMenuToggle: () => void
@@ -10,25 +12,33 @@ interface AdminHeaderProps {
 
 const AdminHeader = ({ onMenuToggle, isSidebarOpen }: AdminHeaderProps) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
-  const [currentUser, setCurrentUser] = useState<any>(null)
-  const [userRole, setUserRole] = useState<string>('')
+  const { user, signOut, isAdmin } = useAuth()
+  const router = useRouter()
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
+  // Close dropdown when clicking outside
   useEffect(() => {
-    const role = localStorage.getItem('userRole')
-    const user = localStorage.getItem('currentUser')
-    setUserRole(role || '')
-    if (user) {
-      setCurrentUser(JSON.parse(user))
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
 
-  const handleLogout = () => {
-    // Clear admin session
-    localStorage.removeItem('adminToken')
-    localStorage.removeItem('userRole')
-    localStorage.removeItem('currentUser')
-    // Force a page reload to ensure the layout re-renders without authentication
-    window.location.href = '/admin/login'
+  const handleLogout = async () => {
+    try {
+      await signOut()
+      router.push('/admin/login')
+    } catch (error) {
+      console.error('Sign out error:', error)
+      // Force redirect even if signOut fails
+      router.push('/admin/login')
+    }
   }
 
   return (
@@ -65,7 +75,7 @@ const AdminHeader = ({ onMenuToggle, isSidebarOpen }: AdminHeaderProps) => {
             </button>
 
             {/* Profile Dropdown */}
-            <div className="relative">
+            <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 className="flex items-center space-x-2 sm:space-x-3 p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
@@ -75,10 +85,10 @@ const AdminHeader = ({ onMenuToggle, isSidebarOpen }: AdminHeaderProps) => {
                 </div>
                                  <div className="text-left hidden sm:block">
                    <p className="text-sm font-medium">
-                     {userRole === 'admin' ? 'Admin User' : currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : 'User'}
+                     {user?.displayName || (isAdmin() ? 'Admin User' : 'Team Member')}
                    </p>
                    <p className="text-xs text-gray-500">
-                     {userRole === 'admin' ? 'admin@vynix.com' : currentUser?.email || 'user@vynix.com'}
+                     {user?.email || 'user@vynix.com'}
                    </p>
                  </div>
               </button>

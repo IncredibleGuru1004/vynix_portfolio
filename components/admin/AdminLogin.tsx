@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff, Lock, Mail, Code, Smartphone, Cloud, Database } from 'lucide-react'
+import { signInAdmin } from '@/lib/firebase-auth'
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({
@@ -27,31 +28,15 @@ const AdminLogin = () => {
     setIsLoading(true)
     setError('')
 
-    // Simulate authentication (replace with real authentication)
-    setTimeout(() => {
-      // Check for main admin
-      if (formData.email === 'admin@vynix.com' && formData.password === 'admin123') {
-        localStorage.setItem('adminToken', 'admin-token-123')
-        localStorage.setItem('userRole', 'admin')
-        // Force a page reload to ensure the layout re-renders with authentication
-        window.location.href = '/admin'
-      } else {
-        // Check for approved team members
-        const approvedUsers = JSON.parse(localStorage.getItem('approvedUsers') || '[]')
-        const user = approvedUsers.find((u: any) => u.email === formData.email)
-        
-        if (user && formData.password === 'team123') {
-          localStorage.setItem('adminToken', `user-token-${user.id}`)
-          localStorage.setItem('userRole', 'team-member')
-          localStorage.setItem('currentUser', JSON.stringify(user))
-          // Force a page reload to ensure the layout re-renders with authentication
-          window.location.href = '/admin'
-        } else {
-          setError('Invalid email or password. Make sure you are approved by an admin.')
-        }
-      }
+    try {
+      await signInAdmin(formData.email, formData.password)
+      // Redirect to admin dashboard
+      router.push('/admin')
+    } catch (error: any) {
+      setError(error.message || 'Failed to sign in. Please check your credentials.')
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
   }
 
   return (
@@ -157,19 +142,17 @@ const AdminLogin = () => {
             </button>
           </form>
 
-          {/* Demo Credentials */}
+          {/* Firebase Auth Info */}
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">Demo Credentials:</h3>
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Firebase Authentication:</h3>
             <div className="space-y-2">
               <div>
-                <p className="text-xs text-gray-600 font-medium">Admin Access:</p>
-                <p className="text-xs text-gray-600">Email: admin@vynix.com</p>
-                <p className="text-xs text-gray-600">Password: admin123</p>
+                <p className="text-xs text-gray-600">Sign in with your Firebase account</p>
+                <p className="text-xs text-gray-600">Make sure you're registered in the admin database</p>
               </div>
               <div>
-                <p className="text-xs text-gray-600 font-medium">Team Member Access:</p>
-                <p className="text-xs text-gray-600">Use approved team member email</p>
-                <p className="text-xs text-gray-600">Password: team123</p>
+                <p className="text-xs text-gray-600 font-medium">Note:</p>
+                <p className="text-xs text-gray-600">Only approved users can access the admin panel</p>
               </div>
             </div>
           </div>

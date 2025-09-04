@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { useAuth } from '@/contexts/AuthContext'
 import {
   LayoutDashboard,
   FolderOpen,
@@ -16,7 +17,7 @@ import {
   X,
   UserCheck,
   Clock,
-  User
+  LogOut
 } from 'lucide-react'
 
 interface AdminSidebarProps {
@@ -27,13 +28,19 @@ interface AdminSidebarProps {
 
 const AdminSidebar = ({ isOpen, onClose, onMenuToggle }: AdminSidebarProps) => {
   const pathname = usePathname()
+  const router = useRouter()
+  const { isAdmin, signOut } = useAuth()
   const [expandedSections, setExpandedSections] = useState<string[]>(['content'])
-  const [userRole, setUserRole] = useState<string>('')
 
-  useEffect(() => {
-    const role = localStorage.getItem('userRole')
-    setUserRole(role || '')
-  }, [])
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+      router.push('/admin/login')
+    } catch (error) {
+      console.error('Sign out error:', error)
+      router.push('/admin/login')
+    }
+  }
 
   const menuItems = [
     {
@@ -44,7 +51,7 @@ const AdminSidebar = ({ isOpen, onClose, onMenuToggle }: AdminSidebarProps) => {
       exact: true
     },
     // Only show approvals to admin users
-    ...(userRole === 'admin' ? [{
+    ...(isAdmin() ? [{
       id: 'approvals',
       label: 'Team Approvals',
       icon: UserCheck,
@@ -210,21 +217,15 @@ const AdminSidebar = ({ isOpen, onClose, onMenuToggle }: AdminSidebarProps) => {
           </ul>
         </nav>
 
-        {/* User Info Section */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-gray-50">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-              <User className="h-4 w-4 text-primary-600" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
-                {userRole === 'admin' ? 'Admin User' : 'Team Member'}
-              </p>
-              <p className="text-xs text-gray-500 truncate">
-                {userRole === 'admin' ? 'admin@vynix.com' : 'user@vynix.com'}
-              </p>
-            </div>
-          </div>
+        {/* Sign Out Button */}
+        <div className="p-4 border-t border-gray-200">
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center justify-center px-3 py-2 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Sign Out
+          </button>
         </div>
       </aside>
     </>

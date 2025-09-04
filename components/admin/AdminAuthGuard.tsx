@@ -1,50 +1,32 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface AdminAuthGuardProps {
   children: React.ReactNode
 }
 
 const AdminAuthGuard = ({ children }: AdminAuthGuardProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const { user, loading, isApprovedTeamMember } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
 
   useEffect(() => {
     // Skip auth check for login page
     if (pathname === '/admin/login') {
-      setIsAuthenticated(true)
-      setIsLoading(false)
       return
     }
 
-    const checkAuth = () => {
-      try {
-        const adminToken = localStorage.getItem('adminToken')
-        
-        if (!adminToken) {
-          router.replace('/admin/login')
-          return
-        }
-        
-        setIsAuthenticated(true)
-      } catch (error) {
-        console.error('Auth check error:', error)
-        router.replace('/admin/login')
-      } finally {
-        setIsLoading(false)
-      }
+    // Redirect to login if not authenticated or not approved
+    if (!loading && (!user || !isApprovedTeamMember())) {
+      router.replace('/admin/login')
     }
+  }, [user, loading, isApprovedTeamMember, router, pathname])
 
-    // Add a small delay to ensure localStorage is available
-    const timer = setTimeout(checkAuth, 50)
-    return () => clearTimeout(timer)
-  }, [router, pathname])
-
-  if (isLoading) {
+  // Show loading spinner while checking authentication
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -55,7 +37,8 @@ const AdminAuthGuard = ({ children }: AdminAuthGuardProps) => {
     )
   }
 
-  if (!isAuthenticated) {
+  // Don't render children if not authenticated or not approved
+  if (!user || !isApprovedTeamMember()) {
     return null
   }
 
