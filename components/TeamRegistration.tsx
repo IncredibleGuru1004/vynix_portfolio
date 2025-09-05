@@ -239,25 +239,10 @@ const TeamRegistration = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-4">
                   Profile Photo (Optional)
                 </label>
-                <div className="flex items-center space-x-6">
-                  <div className="relative">
-                    <Avatar
-                      src={avatarPreview || undefined}
-                      name={`${formData.firstName} ${formData.lastName}`}
-                      size="xl"
-                      className="border-4 border-white shadow-lg"
-                    />
-                    {avatarPreview && (
-                      <button
-                        type="button"
-                        onClick={removeAvatar}
-                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    )}
-                  </div>
-                  <div className="flex-1">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-8">
+                  {/* Avatar Preview */}
+                  <div className="relative group">
+                    {/* Hidden file input */}
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -266,16 +251,82 @@ const TeamRegistration = () => {
                       className="hidden"
                       id="avatar-upload"
                     />
-                    <label
-                      htmlFor="avatar-upload"
-                      className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer transition-colors"
-                    >
-                      <Camera className="h-4 w-4 mr-2" />
-                      {avatarPreview ? 'Change Photo' : 'Upload Photo'}
-                    </label>
-                    <p className="text-xs text-gray-500 mt-2">
-                      JPG, PNG or GIF. Max size 5MB.
-                    </p>
+                    
+                    <div className="relative">
+                      {/* Main circular container with gradient border */}
+                      <div 
+                        className="w-32 h-32 rounded-full p-1 bg-gradient-to-br from-primary-400 to-primary-600 shadow-2xl cursor-pointer hover:shadow-3xl transition-all duration-300 hover:scale-105"
+                        onClick={() => {
+                          console.log('Avatar clicked, triggering file input')
+                          if (fileInputRef.current) {
+                            fileInputRef.current.click()
+                          }
+                        }}
+                      >
+                        <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
+                          {avatarPreview ? (
+                            <img
+                              src={avatarPreview}
+                              alt="Profile preview"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                              <User className="h-12 w-12 text-gray-400" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Remove button */}
+                      {avatarPreview && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            removeAvatar()
+                          }}
+                          className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-110 z-10"
+                          title="Remove photo"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      )}
+                      
+                      {/* Upload overlay on hover */}
+                      {!avatarPreview && (
+                        <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                          <Camera className="h-8 w-8 text-white" />
+                        </div>
+                      )}
+                      
+                    </div>
+                  </div>
+
+                  {/* File info and guidelines */}
+                  <div className="flex-1 space-y-4">
+                    <div className="space-y-2">
+                      <p className="text-sm text-gray-600">
+                        <strong>Click the avatar to upload a photo</strong>
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <strong>Supported formats:</strong> JPG, PNG, GIF, WebP
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <strong>Maximum size:</strong> 5MB
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <strong>Recommended:</strong> Square image, at least 400x400px
+                      </p>
+                    </div>
+
+                    {/* Upload progress indicator (if needed) */}
+                    {isSubmitting && (
+                      <div className="flex items-center space-x-2 text-sm text-primary-600">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600"></div>
+                        <span>Processing image...</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

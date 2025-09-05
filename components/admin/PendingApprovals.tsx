@@ -133,7 +133,8 @@ const PendingApprovals = () => {
           email: registration.email,
           firstName: registration.firstName,
           lastName: registration.lastName,
-          position: registration.position
+          position: registration.position,
+          teamRegistrationId: registration.id // Pass the team registration ID to create the relationship
         }),
       })
 

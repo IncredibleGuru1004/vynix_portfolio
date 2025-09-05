@@ -26,6 +26,21 @@ export async function GET(request: NextRequest) {
       search: searchParams.get('search') || undefined
     }
 
+    // Helper function to convert Firebase Timestamp to ISO string
+    const convertTimestamp = (timestamp: any) => {
+      if (!timestamp) return null
+      if (timestamp.toDate && typeof timestamp.toDate === 'function') {
+        return timestamp.toDate().toISOString()
+      } else if (timestamp.seconds) {
+        return new Date(timestamp.seconds * 1000).toISOString()
+      } else if (typeof timestamp === 'string') {
+        return timestamp
+      } else if (timestamp instanceof Date) {
+        return timestamp.toISOString()
+      }
+      return timestamp
+    }
+
     // Fetch approved team registrations from Firebase
     const q = query(
       collection(db, 'teamRegistrations'),
@@ -38,21 +53,6 @@ export async function GET(request: NextRequest) {
     snapshot.forEach((doc) => {
       const data = doc.data()
       
-      // Helper function to convert Firebase Timestamp to ISO string
-      const convertTimestamp = (timestamp: any) => {
-        if (!timestamp) return null
-        if (timestamp.toDate && typeof timestamp.toDate === 'function') {
-          return timestamp.toDate().toISOString()
-        } else if (timestamp.seconds) {
-          return new Date(timestamp.seconds * 1000).toISOString()
-        } else if (typeof timestamp === 'string') {
-          return timestamp
-        } else if (timestamp instanceof Date) {
-          return timestamp.toISOString()
-        }
-        return timestamp
-      }
-      
       registrations.push({
         id: doc.id,
         ...data,
@@ -62,34 +62,71 @@ export async function GET(request: NextRequest) {
       } as unknown as TeamRegistration)
     })
 
-    // Convert TeamRegistration to TeamMember format
-    const teamMembers: TeamMember[] = registrations.map((reg, index) => ({
-      id: index + 1, // Use sequential ID for compatibility
-      name: `${reg.firstName} ${reg.lastName}`,
-      role: reg.position,
-      image: reg.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(reg.firstName + ' ' + reg.lastName)}&background=random&color=fff&size=400`,
-      bio: reg.coverLetter || `Experienced ${reg.position} with ${reg.experience} of experience.`,
-      skills: reg.skills ? reg.skills.split(',').map(s => s.trim()) : [],
-      icon: 'Code', // Default icon
-      color: 'from-blue-500 to-blue-600', // Default color
-      social: {
-        github: reg.github,
-        linkedin: reg.linkedin,
-        email: reg.email
-      },
-      status: 'active' as const,
-      joinedDate: reg.submittedAt,
-      experience: parseInt(reg.experience) || 0,
-      location: reg.location,
-      availability: reg.availability === 'full-time' ? 'available' : 
-                   reg.availability === 'part-time' ? 'busy' : 'unavailable',
-      createdAt: reg.createdAt,
-      updatedAt: reg.updatedAt,
-      // Additional fields from TeamRegistration
-      originalRegistrationId: reg.id,
-      position: reg.position,
-      coverLetter: reg.coverLetter
-    }))
+    // Fetch admin users that are related to team registrations
+    const adminUsersQuery = query(
+      collection(db, 'adminUsers'),
+      where('isFromTeamRegistration', '==', true)
+    )
+
+    const adminUsersSnapshot = await getDocs(adminUsersQuery)
+    const adminUsers: any[] = []
+
+    adminUsersSnapshot.forEach((doc) => {
+      const data = doc.data()
+      adminUsers.push({
+        id: doc.id,
+        ...data,
+        createdAt: convertTimestamp(data.createdAt),
+        lastLoginAt: convertTimestamp(data.lastLoginAt),
+        promotedAt: convertTimestamp(data.promotedAt),
+        demotedAt: convertTimestamp(data.demotedAt),
+      })
+    })
+
+    // Create a map of admin users by team registration ID for quick lookup
+    const adminUsersByRegistrationId = new Map()
+    adminUsers.forEach(adminUser => {
+      if (adminUser.teamRegistrationId) {
+        adminUsersByRegistrationId.set(adminUser.teamRegistrationId, adminUser)
+      }
+    })
+
+    // Convert TeamRegistration to TeamMember format, merging with admin user data if available
+    const teamMembers: TeamMember[] = registrations.map((reg, index) => {
+      const relatedAdminUser = adminUsersByRegistrationId.get(reg.id)
+      
+      return {
+        id: index + 1, // Use sequential ID for compatibility
+        name: `${reg.firstName} ${reg.lastName}`,
+        role: reg.position,
+        image: reg.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(reg.firstName + ' ' + reg.lastName)}&background=random&color=fff&size=400`,
+        bio: reg.coverLetter || `Experienced ${reg.position} with ${reg.experience} of experience.`,
+        skills: reg.skills ? reg.skills.split(',').map(s => s.trim()) : [],
+        icon: 'Code', // Default icon
+        color: 'from-blue-500 to-blue-600', // Default color
+        social: {
+          github: reg.github,
+          linkedin: reg.linkedin,
+          email: reg.email
+        },
+        status: 'active' as const,
+        joinedDate: reg.submittedAt,
+        experience: parseInt(reg.experience) || 0,
+        location: reg.location,
+        availability: reg.availability === 'full-time' ? 'available' : 
+                     reg.availability === 'part-time' ? 'busy' : 'unavailable',
+        createdAt: reg.createdAt,
+        updatedAt: reg.updatedAt,
+        // Additional fields from TeamRegistration
+        originalRegistrationId: reg.id,
+        position: reg.position,
+        coverLetter: reg.coverLetter,
+        // Admin user relationship fields
+        adminUserId: relatedAdminUser?.uid || null,
+        isFromTeamRegistration: !!relatedAdminUser,
+        lastLoginAt: relatedAdminUser?.lastLoginAt || null
+      }
+    })
 
     // Apply search
     let filteredMembers = teamMembers

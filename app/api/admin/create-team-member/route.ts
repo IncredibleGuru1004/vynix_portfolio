@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     }
     const { user: adminUser } = authResult
 
-    const { email, firstName, lastName, position } = await request.json()
+    const { email, firstName, lastName, position, teamRegistrationId } = await request.json()
 
     if (!email || !firstName || !lastName || !position) {
       return NextResponse.json(
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       displayName: `${firstName} ${lastName}`,
     })
 
-    // Create user document in Firestore
+    // Create user document in Firestore with relationship to team registration
     const teamMemberUser = {
       uid: userRecord.uid,
       email: userRecord.email!,
@@ -56,6 +56,9 @@ export async function POST(request: NextRequest) {
       createdAt: new Date(),
       createdBy: adminUser.uid, // Track who created this user
       createdByEmail: adminUser.email,
+      // Relationship to team registration
+      teamRegistrationId: teamRegistrationId || null, // Reference to the original team registration document ID
+      isFromTeamRegistration: !!teamRegistrationId, // Flag to indicate if this admin user was created from a team registration
     }
 
     await db.collection('adminUsers').doc(userRecord.uid).set(teamMemberUser)
@@ -64,7 +67,9 @@ export async function POST(request: NextRequest) {
       success: true,
       data: {
         password: tempPassword,
-        user: adminUser
+        user: adminUser,
+        teamMemberUid: userRecord.uid,
+        teamRegistrationId: teamRegistrationId
       }
     })
 

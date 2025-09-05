@@ -6,6 +6,7 @@ import { Bell, User, LogOut, Menu } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePage } from '@/contexts/PageContext'
 import Avatar from '@/components/ui/Avatar'
+import { useUserAvatar } from '@/hooks/useUserAvatar'
 
 interface AdminHeaderProps {
   onMenuToggle: () => void
@@ -18,6 +19,9 @@ const AdminHeader = ({ onMenuToggle, isSidebarOpen }: AdminHeaderProps) => {
   const { title, subtitle } = usePage()
   const router = useRouter()
   const dropdownRef = useRef<HTMLDivElement>(null)
+  
+  // Use custom hook to fetch avatar image from team registration
+  const { avatarImage, isLoading: isLoadingAvatar } = useUserAvatar(user?.uid)
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -83,12 +87,13 @@ const AdminHeader = ({ onMenuToggle, isSidebarOpen }: AdminHeaderProps) => {
                 className="flex items-center space-x-2 sm:space-x-3 p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <Avatar
-                  src={undefined} // Admin users don't have photoURL in our current setup
+                  src={avatarImage || undefined} // Use the fetched avatar image from team registration
                   name={user?.displayName || (isAdmin() ? 'Admin User' : 'Team Member')}
                   size="sm"
                   showStatus
                   status="online"
                   className="flex-shrink-0"
+                  loading={isLoadingAvatar}
                 />
                 <div className="text-left hidden sm:block">
                   <p className="text-sm font-medium">
@@ -103,6 +108,16 @@ const AdminHeader = ({ onMenuToggle, isSidebarOpen }: AdminHeaderProps) => {
               {/* Dropdown Menu */}
               {isProfileOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                  <button
+                    onClick={() => {
+                      setIsProfileOpen(false)
+                      router.push('/admin/profile')
+                    }}
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    <User className="h-4 w-4 mr-3" />
+                    Profile
+                  </button>
                   <button
                     onClick={handleLogout}
                     className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"

@@ -17,7 +17,8 @@ import {
   X,
   UserCheck,
   Clock,
-  Shield
+  Shield,
+  User
 } from 'lucide-react'
 
 interface AdminSidebarProps {
@@ -92,6 +93,12 @@ const AdminSidebar = ({ isOpen, onClose, onMenuToggle }: AdminSidebarProps) => {
       label: 'Test Page',
       icon: Settings,
       href: '/admin/test'
+    },
+    {
+      id: 'profile',
+      label: 'My Profile',
+      icon: User,
+      href: '/admin/profile'
     }
   ]
 

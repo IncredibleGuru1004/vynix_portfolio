@@ -75,6 +75,10 @@ export interface TeamMember extends BaseEntity {
   originalRegistrationId?: string
   position?: string
   coverLetter?: string
+  // Admin user relationship fields
+  adminUserId?: string | null
+  isFromTeamRegistration?: boolean
+  lastLoginAt?: string | null
 }
 
 export type TeamStatus = 'active' | 'inactive'
@@ -213,6 +217,9 @@ export interface FirebaseAdminUser {
   demotedBy?: string
   demotedByEmail?: string
   demotedAt?: Date
+  // Relationship to team registration
+  teamRegistrationId?: string // Reference to the original team registration document ID
+  isFromTeamRegistration?: boolean // Flag to indicate if this admin user was created from a team registration
 }
 
 // API Response types

@@ -342,6 +342,96 @@ class Database {
         },
         createdAt: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-01T00:00:00Z'
+      },
+      {
+        id: 4,
+        title: 'Cloud Solutions',
+        description: 'AWS, Azure, and Google Cloud infrastructure with containerization and DevOps.',
+        technologies: ['AWS', 'Azure', 'Google Cloud', 'Docker', 'Kubernetes', 'CI/CD'],
+        icon: 'Cloud',
+        color: 'from-orange-500 to-orange-600',
+        isActive: true,
+        order: 4,
+        features: ['Infrastructure as Code', 'Auto-scaling', 'Monitoring', 'Disaster Recovery'],
+        pricing: {
+          starting: 12000,
+          currency: 'USD',
+          unit: 'project'
+        },
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z'
+      },
+      {
+        id: 5,
+        title: 'Database Design',
+        description: 'SQL and NoSQL database solutions with optimization and security best practices.',
+        technologies: ['PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'GraphQL', 'REST APIs'],
+        icon: 'Database',
+        color: 'from-red-500 to-red-600',
+        isActive: true,
+        order: 5,
+        features: ['Database Optimization', 'Data Modeling', 'Backup & Recovery', 'Performance Tuning'],
+        pricing: {
+          starting: 6000,
+          currency: 'USD',
+          unit: 'project'
+        },
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z'
+      },
+      {
+        id: 6,
+        title: 'Security & Compliance',
+        description: 'Enterprise-grade security implementation and compliance with industry standards.',
+        technologies: ['SSL/TLS', 'OAuth', 'JWT', 'GDPR', 'HIPAA', 'SOC 2'],
+        icon: 'Shield',
+        color: 'from-indigo-500 to-indigo-600',
+        isActive: true,
+        order: 6,
+        features: ['Security Audits', 'Penetration Testing', 'Compliance', 'Data Protection'],
+        pricing: {
+          starting: 15000,
+          currency: 'USD',
+          unit: 'project'
+        },
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z'
+      },
+      {
+        id: 7,
+        title: 'Performance Optimization',
+        description: 'Application performance tuning, caching strategies, and scalability solutions.',
+        technologies: ['CDN', 'Caching', 'Load Balancing', 'Monitoring', 'Analytics'],
+        icon: 'Zap',
+        color: 'from-yellow-500 to-yellow-600',
+        isActive: true,
+        order: 7,
+        features: ['Performance Audits', 'Caching Strategies', 'Load Testing', 'Monitoring Setup'],
+        pricing: {
+          starting: 7000,
+          currency: 'USD',
+          unit: 'project'
+        },
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z'
+      },
+      {
+        id: 8,
+        title: 'Team Augmentation',
+        description: 'Expert developers and specialists to augment your existing development teams.',
+        technologies: ['Agile', 'Scrum', 'DevOps', 'Code Review', 'Mentoring'],
+        icon: 'Users',
+        color: 'from-pink-500 to-pink-600',
+        isActive: true,
+        order: 8,
+        features: ['Dedicated Teams', 'Code Reviews', 'Mentoring', 'Agile Coaching'],
+        pricing: {
+          starting: 8000,
+          currency: 'USD',
+          unit: 'month'
+        },
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z'
       }
     ]
 
