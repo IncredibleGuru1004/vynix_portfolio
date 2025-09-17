@@ -50,9 +50,14 @@ export async function POST(
       )
     }
 
+    // Get admin class from request body (optional)
+    const body = await request.json().catch(() => ({}))
+    const { adminClass = 'Standard' } = body
+
     // Update user role to admin
     await db.collection('adminUsers').doc(userId).update({
       role: 'admin',
+      adminClass,
       promotedBy: adminUser.uid,
       promotedByEmail: adminUser.email,
       promotedAt: new Date()

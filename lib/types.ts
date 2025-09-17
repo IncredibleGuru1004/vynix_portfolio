@@ -200,12 +200,30 @@ export type Permission =
   | 'view_analytics'
   | 'manage_users'
 
+// Admin Class types
+export type AdminClass = 
+  | 'CEO' 
+  | 'CTO' 
+  | 'CFO' 
+  | 'COO'
+  | 'CMO'
+  | 'VP Engineering'
+  | 'VP Product'
+  | 'VP Sales'
+  | 'VP Marketing'
+  | 'Director'
+  | 'Manager'
+  | 'Lead'
+  | 'Senior'
+  | 'Standard'
+
 // Firebase Admin User types (for authentication)
 export interface FirebaseAdminUser {
   uid: string
   email: string
   displayName?: string
   role: 'admin' | 'team-member'
+  adminClass?: AdminClass // New field for admin class
   isApproved: boolean
   createdAt: Date
   lastLoginAt?: Date
@@ -370,6 +388,21 @@ export interface CreateHeroContentRequest {
 
 export interface UpdateHeroContentRequest extends Partial<CreateHeroContentRequest> {
   id: number
+}
+
+// Admin User Request types
+export interface CreateAdminRequest {
+  email: string
+  displayName?: string
+  adminClass: AdminClass
+  password?: string
+}
+
+export interface UpdateAdminRequest {
+  uid: string
+  displayName?: string
+  adminClass?: AdminClass
+  role?: 'admin' | 'team-member'
 }
 
 // Analytics types

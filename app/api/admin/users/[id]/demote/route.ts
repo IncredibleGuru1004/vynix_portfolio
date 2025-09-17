@@ -58,9 +58,10 @@ export async function POST(
       )
     }
 
-    // Update user role to team member
+    // Update user role to team member and remove admin class
     await db.collection('adminUsers').doc(userId).update({
       role: 'team-member',
+      adminClass: null, // Remove admin class when demoted
       demotedBy: adminUser.uid,
       demotedByEmail: adminUser.email,
       demotedAt: new Date()

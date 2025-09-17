@@ -16,8 +16,26 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePage } from '@/contexts/PageContext'
-import { FirebaseAdminUser } from '@/lib/types'
+import { FirebaseAdminUser, AdminClass } from '@/lib/types'
 import { auth } from '@/lib/firebase'
+import AddAdminForm from './AddAdminForm'
+
+const AdminClassColors: Record<AdminClass, string> = {
+  'CEO': 'bg-red-100 text-red-800 border-red-200',
+  'CTO': 'bg-blue-100 text-blue-800 border-blue-200',
+  'CFO': 'bg-green-100 text-green-800 border-green-200',
+  'COO': 'bg-purple-100 text-purple-800 border-purple-200',
+  'CMO': 'bg-pink-100 text-pink-800 border-pink-200',
+  'VP Engineering': 'bg-indigo-100 text-indigo-800 border-indigo-200',
+  'VP Product': 'bg-cyan-100 text-cyan-800 border-cyan-200',
+  'VP Sales': 'bg-orange-100 text-orange-800 border-orange-200',
+  'VP Marketing': 'bg-teal-100 text-teal-800 border-teal-200',
+  'Director': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+  'Manager': 'bg-gray-100 text-gray-800 border-gray-200',
+  'Lead': 'bg-emerald-100 text-emerald-800 border-emerald-200',
+  'Senior': 'bg-amber-100 text-amber-800 border-amber-200',
+  'Standard': 'bg-slate-100 text-slate-800 border-slate-200'
+}
 
 const AdminManagement = () => {
   const { setPageInfo } = usePage()
@@ -254,17 +272,21 @@ const AdminManagement = () => {
     }
   }
 
-  const getRoleBadge = (role: string, isApproved: boolean) => {
-    if (role === 'admin') {
+  const getRoleBadge = (admin: FirebaseAdminUser) => {
+    if (admin.role === 'admin') {
+      const adminClass = admin.adminClass || 'Standard'
+      const colors = AdminClassColors[adminClass]
       return (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-          <Crown className="h-3 w-3 mr-1" />
-          Admin
-        </span>
+        <div className="flex items-center space-x-2">
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${colors}`}>
+            <Crown className="h-3 w-3 mr-1" />
+            {adminClass}
+          </span>
+        </div>
       )
     }
     
-    if (isApproved) {
+    if (admin.isApproved) {
       return (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
           <CheckCircle className="h-3 w-3 mr-1" />
@@ -328,16 +350,29 @@ const AdminManagement = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center">
               <div className="p-2 bg-purple-100 rounded-lg">
                 <Crown className="h-6 w-6 text-purple-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Admins</p>
+                <p className="text-sm font-medium text-gray-600">Total Admins</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {admins.filter(a => a.role === 'admin').length}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Crown className="h-6 w-6 text-blue-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">C-Level</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {admins.filter(a => a.role === 'admin' && ['CEO', 'CTO', 'CFO', 'COO', 'CMO'].includes(a.adminClass || '')).length}
                 </p>
               </div>
             </div>
@@ -380,22 +415,33 @@ const AdminManagement = () => {
               <div key={admin.uid} className="px-6 py-4 hover:bg-gray-50">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                      <User className="h-5 w-5 text-primary-600" />
+                    <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
+                      {admin.role === 'admin' && admin.adminClass && ['CEO', 'CTO', 'CFO', 'COO', 'CMO'].includes(admin.adminClass) ? (
+                        <Crown className="h-6 w-6 text-primary-600" />
+                      ) : (
+                        <User className="h-6 w-6 text-primary-600" />
+                      )}
                     </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-900">
-                        {admin.displayName || 'Unknown User'}
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <h3 className="text-sm font-medium text-gray-900">
+                          {admin.displayName || 'Unknown User'}
+                        </h3>
                         {admin.uid === currentUser?.uid && (
-                          <span className="ml-2 text-xs text-blue-600">(You)</span>
+                          <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">You</span>
                         )}
-                      </h3>
-                      <p className="text-sm text-gray-600">{admin.email}</p>
-                      <div className="flex items-center space-x-4 mt-1">
-                        {getRoleBadge(admin.role, admin.isApproved)}
+                      </div>
+                      <p className="text-sm text-gray-600 mb-2">{admin.email}</p>
+                      <div className="flex items-center space-x-3">
+                        {getRoleBadge(admin)}
                         <span className="text-xs text-gray-500">
                           Joined: {formatDate(admin.createdAt)}
                         </span>
+                        {admin.role === 'admin' && admin.adminClass && (
+                          <span className="text-xs text-gray-500">
+                            Class: <span className="font-medium">{admin.adminClass}</span>
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -434,6 +480,14 @@ const AdminManagement = () => {
           </div>
         </div>
       </div>
+
+      {/* Add Admin Modal */}
+      {showAddAdmin && (
+        <AddAdminForm
+          onClose={() => setShowAddAdmin(false)}
+          onSuccess={loadAdmins}
+        />
+      )}
 
       {/* Toast Notification */}
       {toast && (
