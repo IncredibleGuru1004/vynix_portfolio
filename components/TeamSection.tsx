@@ -233,7 +233,7 @@ const TeamSection = () => {
               Our Team is Growing
             </h3>
             <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              We're currently building our amazing team. Check back soon to meet our talented professionals who will be joining us.
+              We&apos;re currently building our amazing team. Check back soon to meet our talented professionals who will be joining us.
             </p>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-md mx-auto">
               <p className="text-blue-800 font-medium mb-2">Interested in joining our team?</p>
