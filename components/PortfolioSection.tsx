@@ -5,7 +5,7 @@ import { ExternalLink, Github, Smartphone, Globe, Database, Cloud } from 'lucide
 import { useProjects } from '@/hooks/useApi'
 
 const PortfolioSection = () => {
-  const { data: projects = [], loading, error } = useProjects({ status: 'published' })
+  const { data: projects = [], loading, error } = useProjects({ status: 'published', limit: 100 })
 
   // Map category to icon
   const getCategoryIcon = (category: string) => {

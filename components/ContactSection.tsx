@@ -68,7 +68,7 @@ const ContactSection = () => {
     {
       icon: Mail,
       title: 'Email Us',
-      details: ['hello@techflow.com', 'support@techflow.com'],
+      details: ['hello@vynix.pro', 'support@vynix.pro'],
       color: 'from-blue-500 to-blue-600'
     },
     {
@@ -180,7 +180,7 @@ const ContactSection = () => {
               viewport={{ once: true }}
               className="mt-12 bg-gray-50 rounded-xl p-6"
             >
-              <h4 className="font-semibold text-gray-900 mb-4">Why Choose TechFlow?</h4>
+              <h4 className="font-semibold text-gray-900 mb-4">Why Choose Vynix Spark?</h4>
               <ul className="space-y-2">
                 <li className="flex items-center text-sm text-gray-600">
                   <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
