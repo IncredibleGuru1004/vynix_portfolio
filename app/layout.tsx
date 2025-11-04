@@ -9,6 +9,11 @@ export const metadata: Metadata = {
   description: 'Leading IT development agency specializing in web applications, mobile apps, cloud solutions, and digital transformation. Expert team delivering cutting-edge technology solutions.',
   keywords: 'IT development, web development, mobile apps, cloud solutions, digital transformation, software development agency',
   authors: [{ name: 'VynixSpark' }],
+  icons: {
+    icon: '/icon.png',
+    shortcut: '/icon.png',
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
     title: 'VynixSpark - Premier IT Development Agency',
     description: 'Leading IT development agency specializing in web applications, mobile apps, cloud solutions, and digital transformation.',
